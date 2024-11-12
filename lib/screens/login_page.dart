@@ -33,14 +33,17 @@ class LoginPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Handle login
+                    // Handle login logic
+                    // If login is successful, navigate to the Fitsync Home Page
+                    Navigator.pushReplacementNamed(context, '/home');
                   },
                   child: Text('Login'),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle register
+                    // Navigate to Register Page
+                    Navigator.pushNamed(context, '/register');
                   },
                   child: Text('Register'),
                 ),

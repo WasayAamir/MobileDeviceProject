@@ -53,7 +53,8 @@ class RegisterPage extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle registration logic and navigate to home page if successful
+                  // Handle registration logic here
+                  // If registration is successful, navigate to the Fitsync Home Page
                   Navigator.pushReplacementNamed(context, '/home');
                 },
                 child: Text('Register'),

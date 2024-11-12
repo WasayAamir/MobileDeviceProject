@@ -3,6 +3,7 @@ import '../screens/video_page.dart';
 
 class SlideWidget extends StatelessWidget {
   final String title;
+
   SlideWidget({required this.title});
 
   @override
@@ -44,7 +45,12 @@ class SlideWidgetWithImage extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoPage(videoUrl: videoUrl),
+            builder: (context) => VideoPage(
+              videoUrl: videoUrl,
+              title: title,   // Pass the title here
+              sets: 3,        // Example value for sets
+              reps: 15,       // Example value for reps
+            ),
           ),
         );
       },

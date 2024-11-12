@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/slide_widget.dart';
-import '../widgets/progress_bar.dart';
+import '../widgets/slide_widget.dart';  // Import slide widgets
+import '../widgets/progress_bar.dart';  // Import ProgressBar widget
+import 'workout_list_page.dart';       // Import workout list page
+import 'video_page.dart';              // Import Video Page
 
 class FitsyncHomePage extends StatefulWidget {
   @override
@@ -10,13 +12,52 @@ class FitsyncHomePage extends StatefulWidget {
 class _FitsyncHomePageState extends State<FitsyncHomePage> {
   bool isSideNavOpen = false;
 
+  // Centralized list of workouts
+  final List<Map<String, dynamic>> workouts = [
+    {
+      'title': "Crunch's Tutorial",
+      'imageUrl': 'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.jpg',
+      'videoUrl': 'https://www.youtube.com/watch?v=yzg6OTbsmcQ',
+      'sets': 3,
+      'reps': 15,
+    },
+    {
+      'title': "Push-Ups Tutorial",
+      'imageUrl': 'https://tostpost.com/images/2018-Mar/28/da1c83d1c74739e363b38856d0a5b66b/1.jpg',
+      'videoUrl': 'https://www.youtube.com/watch?v=_l3ySVKYVJ8',
+      'sets': 4,
+      'reps': 20,
+    },
+    {
+      'title': "Sit-Ups Tutorial",
+      'imageUrl': 'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
+      'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
+      'sets': 3,
+      'reps': 12,
+    },
+    {
+      'title': "Bicep Curls Tutorial",
+      'imageUrl': 'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
+      'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
+      'sets': 4,
+      'reps': 10,
+    },
+    {
+      'title': "Leg Curls Tutorial",
+      'imageUrl': 'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
+      'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
+      'sets': 4,
+      'reps': 12,
+    },
+  ];
+
   // Dialog function to confirm workout
-  void _showWorkoutDialog(BuildContext context, String workoutName) {
+  void _showWorkoutDialog(BuildContext context, Map<String, dynamic> workout) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(workoutName),
+          title: Text(workout['title']),
           content: Text('Do you want to do this workout?'),
           actions: [
             TextButton(
@@ -30,7 +71,17 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               onPressed: () {
                 // 'Yes' action - Proceed with workout
                 Navigator.of(context).pop();
-                // Additional action can be added here if needed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoPage(
+                      videoUrl: workout['videoUrl'],
+                      title: workout['title'],
+                      sets: workout['sets'],
+                      reps: workout['reps'],
+                    ),
+                  ),
+                );
               },
               child: Text('Yes'),
             ),
@@ -73,15 +124,13 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               child: Text('Fitsync Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
-              title: Text('Workouts'),
+              title: Text('Workout Tutorials'),
               onTap: () {
-                // Handle navigation to Workouts
-              },
-            ),
-            ListTile(
-              title: Text('Tutorials'),
-              onTap: () {
-                // Handle navigation to Tutorials
+                // Navigate to Workout List Page with centralized workout data
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WorkoutListPage(workouts: workouts)),
+                );
               },
             ),
             ListTile(
@@ -116,48 +165,16 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               height: 150,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: [
-                  GestureDetector(
-                    onTap: () => _showWorkoutDialog(context, "Crunch's Tutorial"),
+                children: workouts.map((workout) {
+                  return GestureDetector(
+                    onTap: () => _showWorkoutDialog(context, workout),
                     child: SlideWidgetWithImage(
-                      title: "Crunch's Tutorial",
-                      imageUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.jpg',
-                      videoUrl: 'https://www.youtube.com/watch?v=yzg6OTbsmcQ',
+                      title: workout['title'],
+                      imageUrl: workout['imageUrl'],
+                      videoUrl: workout['videoUrl'],
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showWorkoutDialog(context, "Push-Ups Tutorial"),
-                    child: SlideWidgetWithImage(
-                      title: "Push-Ups Tutorial",
-                      imageUrl: 'https://tostpost.com/images/2018-Mar/28/da1c83d1c74739e363b38856d0a5b66b/1.jpg',
-                      videoUrl: '',
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showWorkoutDialog(context, "Sit-Ups Tutorial"),
-                    child: SlideWidgetWithImage(
-                      title: "Sit-Ups Tutorial",
-                      imageUrl: 'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
-                      videoUrl: '',
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showWorkoutDialog(context, "Bicep Curls Tutorial"),
-                    child: SlideWidgetWithImage(
-                      title: 'Bicep Curls Tutorial',
-                      imageUrl: 'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
-                      videoUrl: '',
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showWorkoutDialog(context, "Leg Curls Tutorial"),
-                    child: SlideWidgetWithImage(
-                      title: 'Leg Curls Tutorial',
-                      imageUrl: 'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
-                      videoUrl: '',
-                    ),
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
             ),
             SizedBox(height: 20),
