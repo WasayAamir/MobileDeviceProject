@@ -122,6 +122,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: SlideWidgetWithImage(
                       title: "Crunch's Tutorial",
                       imageUrl: 'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.jpg',
+                      videoUrl: 'https://www.youtube.com/watch?v=yzg6OTbsmcQ',
                     ),
                   ),
                   GestureDetector(
@@ -129,6 +130,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: SlideWidgetWithImage(
                       title: "Push-Ups Tutorial",
                       imageUrl: 'https://tostpost.com/images/2018-Mar/28/da1c83d1c74739e363b38856d0a5b66b/1.jpg',
+                      videoUrl: '',
                     ),
                   ),
                   GestureDetector(
@@ -136,6 +138,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: SlideWidgetWithImage(
                       title: "Sit-Ups Tutorial",
                       imageUrl: 'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
+                      videoUrl: '',
                     ),
                   ),
                   GestureDetector(
@@ -143,6 +146,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: SlideWidgetWithImage(
                       title: 'Bicep Curls Tutorial',
                       imageUrl: 'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
+                      videoUrl: '',
                     ),
                   ),
                   GestureDetector(
@@ -150,6 +154,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: SlideWidgetWithImage(
                       title: 'Leg Curls Tutorial',
                       imageUrl: 'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
+                      videoUrl: '',
                     ),
                   ),
                 ],

@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        google()  // Required for Android tools and libraries
+        mavenCentral()  // Required for other dependencies
+    }
+    dependencies {
+        // Updated AGP version for Gradle 8.x
+        classpath 'com.android.tools.build:gradle:7.4.2'  // Compatible with Gradle 8.x
+    }
+}
+
 allprojects {
     repositories {
         google()
