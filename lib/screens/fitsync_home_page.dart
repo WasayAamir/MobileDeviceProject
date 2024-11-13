@@ -3,6 +3,7 @@ import '../widgets/slide_widget.dart'; // Import slide widgets
 import '../widgets/progress_bar.dart'; // Import ProgressBar widget
 import 'workout_list_page.dart'; // Import workout list page
 import 'video_page.dart'; // Import Video Page
+import 'help_page.dart';
 
 class FitsyncHomePage extends StatefulWidget {
   final String username; // Accept username as a parameter
@@ -157,7 +158,10 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Help'),
               onTap: () {
-                // Handle navigation to Help
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HelpPage()),
+                );
               },
             ),
           ],
