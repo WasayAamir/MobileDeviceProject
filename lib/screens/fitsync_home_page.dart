@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import '../widgets/slide_widget.dart';  // Import slide widgets
-import '../widgets/progress_bar.dart';  // Import ProgressBar widget
-import 'workout_list_page.dart';       // Import workout list page
-import 'video_page.dart';              // Import Video Page
+import '../widgets/slide_widget.dart'; // Import slide widgets
+import '../widgets/progress_bar.dart'; // Import ProgressBar widget
+import 'workout_list_page.dart'; // Import workout list page
+import 'video_page.dart'; // Import Video Page
 
 class FitsyncHomePage extends StatefulWidget {
+  final String username; // Accept username as a parameter
+
+  FitsyncHomePage({required this.username});
+
   @override
   _FitsyncHomePageState createState() => _FitsyncHomePageState();
 }
@@ -16,42 +20,46 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
   final List<Map<String, dynamic>> workouts = [
     {
       'title': "Crunch's Tutorial",
-      'imageUrl': 'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.jpg',
+      'imageUrl':
+      'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.jpg',
       'videoUrl': 'https://www.youtube.com/watch?v=yzg6OTbsmcQ',
       'sets': 3,
       'reps': 15,
     },
     {
       'title': "Push-Ups Tutorial",
-      'imageUrl': 'https://tostpost.com/images/2018-Mar/28/da1c83d1c74739e363b38856d0a5b66b/1.jpg',
+      'imageUrl':
+      'https://tostpost.com/images/2018-Mar/28/da1c83d1c74739e363b38856d0a5b66b/1.jpg',
       'videoUrl': 'https://www.youtube.com/watch?v=_l3ySVKYVJ8',
       'sets': 4,
       'reps': 20,
     },
     {
       'title': "Sit-Ups Tutorial",
-      'imageUrl': 'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
+      'imageUrl':
+      'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
       'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
       'sets': 3,
       'reps': 12,
     },
     {
       'title': "Bicep Curls Tutorial",
-      'imageUrl': 'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
+      'imageUrl':
+      'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
       'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
       'sets': 4,
       'reps': 10,
     },
     {
       'title': "Leg Curls Tutorial",
-      'imageUrl': 'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
+      'imageUrl':
+      'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
       'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
       'sets': 4,
       'reps': 12,
     },
   ];
 
-  final String username = "SabaoonTheGOAT";
   final int level = 13;
   final int currentExp = 50;
   final int requiredExp = 100;
@@ -112,7 +120,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           IconButton(
             icon: Icon(Icons.account_circle),
             onPressed: () {
-              // Navigate to Login Page
               Navigator.pushNamed(context, '/login');
             },
           ),
@@ -127,7 +134,8 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               decoration: BoxDecoration(
                 color: Colors.deepPurple[400],
               ),
-              child: Text('Fitsync Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+              child: Text('Fitsync Menu',
+                  style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
               title: Text('Workout Tutorials'),
@@ -135,7 +143,8 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                 // Navigate to Workout List Page with centralized workout data
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WorkoutListPage(workouts: workouts)),
+                  MaterialPageRoute(
+                      builder: (context) => WorkoutListPage(workouts: workouts)),
                 );
               },
             ),
@@ -163,8 +172,11 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Level: $level', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                Text(username, style: TextStyle(fontSize: 20)),
+                Text('Level: $level',
+                    style:
+                    TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                // Display the username passed to this page
+                Text(widget.username, style: TextStyle(fontSize: 20)),
               ],
             ),
             SizedBox(height: 20),
@@ -173,10 +185,13 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: workouts.map((workout) {
-                  return SlideWidgetWithImage(
-                    title: workout['title'],
-                    imageUrl: workout['imageUrl'],
-                    videoUrl: workout['videoUrl'],
+                  return GestureDetector(
+                    onTap: () => _showWorkoutDialog(context, workout),
+                    child: SlideWidgetWithImage(
+                      title: workout['title'],
+                      imageUrl: workout['imageUrl'],
+                      videoUrl: workout['videoUrl'],
+                    ),
                   );
                 }).toList(),
               ),
@@ -190,12 +205,14 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Progress on Goals', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text('Progress on Goals',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
                         SizedBox(height: 10),
                         ProgressBar(label: 'Goal 1', value: 0.7),
                         SizedBox(height: 10),
                         ProgressBar(label: 'Goal 2', value: 0.4),
-                        SizedBox(height:10),
+                        SizedBox(height: 10),
                         ProgressBar(label: 'Goal 3', value: 0.6),
                       ],
                     ),
@@ -205,21 +222,23 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.yellow,  // Set background color for the box
-                        borderRadius: BorderRadius.circular(10),  // Rounded corners
+                        color: Colors.yellow,
+                        borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),  // Shadow color
+                            color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3),  // Shadow position
+                            offset: Offset(0, 3),
                           ),
                         ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Friend's Leaderboard", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text("Friend's Leaderboard",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
                           SizedBox(height: 10),
                           Text('1. Friend 1 - Score'),
                           Text('2. Friend 2 - Score'),
@@ -243,10 +262,11 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Level $level", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text(username, style: TextStyle(fontSize: 20)),
+                    Text("Level $level",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(widget.username, style: TextStyle(fontSize: 20)),
                     SizedBox(height: 8),
-                    // Experience Bar
                     Stack(
                       children: [
                         Container(

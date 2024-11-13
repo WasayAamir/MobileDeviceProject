@@ -28,7 +28,7 @@ class FitsyncApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginPage(),
-        '/home': (context) => FitsyncHomePage(),
+        '/home': (context) => FitsyncHomePage(username: '',),
         '/register': (context) => RegisterPage(),
       },
     );

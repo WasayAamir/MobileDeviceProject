@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'fitsync_home_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,6 +23,7 @@ class LoginPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              controller: _usernameController,
               decoration: InputDecoration(
                 labelText: 'Username',
                 border: OutlineInputBorder(),
@@ -22,6 +31,7 @@ class LoginPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             TextField(
+              controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
@@ -34,52 +44,26 @@ class LoginPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Handle login logic
-                    Navigator.pushReplacementNamed(context, '/home');
+                    // Navigate to Home Page and pass the username
+                    String username = _usernameController.text;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FitsyncHomePage(username: username),
+                      ),
+                    );
                   },
                   child: Text('Login'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple),
                 ),
                 TextButton(
                   onPressed: () {
-                    // Navigate to Register Page
-                    Navigator.pushNamed(context, '/register');
+                    // Handle register
                   },
                   child: Text('Register'),
                 ),
               ],
-            ),
-            Spacer(),
-            Divider(), // Divider to visually separate the About section
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'FitSync',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'Version 1.0.0',
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'Â© 2024 - FitSyncCo Ltd.',
-                      textAlign: TextAlign.center,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        'This app helps people with their fitness goals.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),
