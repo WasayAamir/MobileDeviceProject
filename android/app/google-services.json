@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "644035745569",
+    "project_id": "fitsync-login",
+    "storage_bucket": "fitsync-login.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644035745569:android:9e3899e324940019acd060",
+        "android_client_info": {
+          "package_name": "com.example.fitsync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmpD4Q1fzgi90bBX_P89MrLAnWMNLKWP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

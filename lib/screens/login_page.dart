@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -15,7 +16,7 @@ class LoginPage extends StatelessWidget {
           children: [
             TextField(
               decoration: InputDecoration(
-                labelText: 'Email',
+                labelText: 'Username',
                 border: OutlineInputBorder(),
               ),
             ),

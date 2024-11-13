@@ -1,9 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'screens/fitsync_home_page.dart';
 import 'screens/login_page.dart';
 import 'screens/register_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(FitsyncApp());
 }
 
@@ -24,7 +30,6 @@ class FitsyncApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/home': (context) => FitsyncHomePage(),
         '/register': (context) => RegisterPage(),
-        // Removed the static route for WorkoutListPage
       },
     );
   }
