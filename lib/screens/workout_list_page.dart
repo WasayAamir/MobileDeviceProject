@@ -11,7 +11,7 @@ class WorkoutListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Workout Tutorials'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.deepPurple[400],
       ),
       body: ListView.builder(
         itemCount: workouts.length,

@@ -51,6 +51,11 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     },
   ];
 
+  final String username = "SabaoonTheGOAT";
+  final int level = 13;
+  final int currentExp = 50;
+  final int requiredExp = 100;
+
   // Dialog function to confirm workout
   void _showWorkoutDialog(BuildContext context, Map<String, dynamic> workout) {
     showDialog(
@@ -96,7 +101,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Fitsync Homepage'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.deepPurple[400],
         actions: [
           IconButton(
             icon: Icon(Icons.people),
@@ -114,12 +119,13 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
         ],
       ),
       drawer: Drawer(
+        backgroundColor: Colors.blue[100],
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.deepPurple,
+                color: Colors.deepPurple[400],
               ),
               child: Text('Fitsync Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
@@ -148,6 +154,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           ],
         ),
       ),
+      backgroundColor: Colors.blue[100],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -156,8 +163,8 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Level: 13', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                Text('WasayAamir', style: TextStyle(fontSize: 20)),
+                Text('Level: $level', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(username, style: TextStyle(fontSize: 20)),
               ],
             ),
             SizedBox(height: 20),
@@ -168,10 +175,13 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                 children: workouts.map((workout) {
                   return GestureDetector(
                     onTap: () => _showWorkoutDialog(context, workout),
-                    child: SlideWidgetWithImage(
-                      title: workout['title'],
-                      imageUrl: workout['imageUrl'],
-                      videoUrl: workout['videoUrl'],
+                    child: SizedBox(
+                      height: 300,
+                      child: SlideWidgetWithImage(
+                        title: workout['title'],
+                        imageUrl: workout['imageUrl'],
+                        videoUrl: workout['videoUrl'],
+                      ),
                     ),
                   );
                 }).toList(),
@@ -191,21 +201,38 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                         ProgressBar(label: 'Goal 1', value: 0.7),
                         SizedBox(height: 10),
                         ProgressBar(label: 'Goal 2', value: 0.4),
+                        SizedBox(height:10),
+                        ProgressBar(label: 'Goal 3', value: 0.6),
                       ],
                     ),
                   ),
                   SizedBox(width: 20),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Friend's Leaderboard", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 10),
-                        Text('1. Friend 1 - Score'),
-                        Text('2. Friend 2 - Score'),
-                        Text('3. Friend 3 - Score'),
-                        Text('4. Friend 4 - Score'),
-                      ],
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.yellow,  // Set background color for the box
+                        borderRadius: BorderRadius.circular(10),  // Rounded corners
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),  // Shadow color
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),  // Shadow position
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Friend's Leaderboard", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10),
+                          Text('1. Friend 1 - Score'),
+                          Text('2. Friend 2 - Score'),
+                          Text('3. Friend 3 - Score'),
+                          Text('4. Friend 4 - Score'),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -216,15 +243,43 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amberAccent,
+                  color: Colors.grey,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Center(
-                  child: Text(
-                    'Stay consistent and earn rewards!',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Level $level", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(username, style: TextStyle(fontSize: 20)),
+                    SizedBox(height: 8),
+                    // Experience Bar
+                    Stack(
+                      children: [
+                        Container(
+                          height: 10.0,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                        ),
+                        FractionallySizedBox(
+                          widthFactor: currentExp / requiredExp,
+                          child: Container(
+                            height: 10.0,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4.0),
+                    Text(
+                      "$currentExp / $requiredExp EXP",
+                      style: TextStyle(fontSize: 12.0, color: Colors.grey[700]),
+                    ),
+                  ],
                 ),
               ),
             ),
