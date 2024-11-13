@@ -38,21 +38,51 @@ class SlideWidgetWithImage extends StatelessWidget {
     required this.videoUrl,
   });
 
+  // Function to show workout dialog
+  void _showWorkoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text('Do you want to do this workout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Dismiss dialog
+                Navigator.of(context).pop();
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Navigate to Video Page if 'Yes' is pressed
+                Navigator.of(context).pop();  // Close dialog
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoPage(
+                      videoUrl: videoUrl,
+                      title: title,
+                      sets: 3, // Example value for sets
+                      reps: 15, // Example value for reps
+                    ),
+                  ),
+                );
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoPage(
-              videoUrl: videoUrl,
-              title: title,   // Pass the title here
-              sets: 3,        // Example value for sets
-              reps: 15,       // Example value for reps
-            ),
-          ),
-        );
+        _showWorkoutDialog(context);  // Show the dialog on tap
       },
       child: Container(
         width: 150,

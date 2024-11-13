@@ -34,7 +34,6 @@ class LoginPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     // Handle login logic
-                    // If login is successful, navigate to the Fitsync Home Page
                     Navigator.pushReplacementNamed(context, '/home');
                   },
                   child: Text('Login'),
@@ -48,6 +47,38 @@ class LoginPage extends StatelessWidget {
                   child: Text('Register'),
                 ),
               ],
+            ),
+            Spacer(),
+            Divider(), // Divider to visually separate the About section
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'FitSync',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      'Version 1.0.0',
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      'Â© 2024 - FitSyncCo Ltd.',
+                      textAlign: TextAlign.center,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        'This app helps people with their fitness goals.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

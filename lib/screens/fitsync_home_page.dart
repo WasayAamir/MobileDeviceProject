@@ -173,16 +173,10 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: workouts.map((workout) {
-                  return GestureDetector(
-                    onTap: () => _showWorkoutDialog(context, workout),
-                    child: SizedBox(
-                      height: 300,
-                      child: SlideWidgetWithImage(
-                        title: workout['title'],
-                        imageUrl: workout['imageUrl'],
-                        videoUrl: workout['videoUrl'],
-                      ),
-                    ),
+                  return SlideWidgetWithImage(
+                    title: workout['title'],
+                    imageUrl: workout['imageUrl'],
+                    videoUrl: workout['videoUrl'],
                   );
                 }).toList(),
               ),
