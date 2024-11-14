@@ -65,7 +65,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
   final int currentExp = 50;
   final int requiredExp = 100;
 
-  // Dialog function to confirm workout
   void _showWorkoutDialog(BuildContext context, Map<String, dynamic> workout) {
     showDialog(
       context: context,
@@ -76,14 +75,12 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           actions: [
             TextButton(
               onPressed: () {
-                // 'No' action - Dismiss dialog
                 Navigator.of(context).pop();
               },
               child: Text('No'),
             ),
             TextButton(
               onPressed: () {
-                // 'Yes' action - Proceed with workout
                 Navigator.of(context).pop();
                 Navigator.push(
                   context,
@@ -141,7 +138,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Workout Tutorials'),
               onTap: () {
-                // Navigate to Workout List Page with centralized workout data
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -177,8 +173,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Level: $level',
-                    style:
-                    TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 // Display the username passed to this page
                 Text(widget.username, style: TextStyle(fontSize: 20)),
               ],
@@ -200,6 +195,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                 }).toList(),
               ),
             ),
+
             SizedBox(height: 20),
             Expanded(
               child: Row(
