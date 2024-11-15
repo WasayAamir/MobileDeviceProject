@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HelpPage extends StatelessWidget {
-  // List of questions and answers for the FAQ section
+  // FAQ section containing questions and answers
   final List<Map<String, String>> faqData = [
     {
       'question': 'How do I track my progress?',
@@ -30,10 +30,10 @@ class HelpPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Help'),
-        backgroundColor: Colors.deepPurple[400],
+        backgroundColor: Colors.deepPurple[400], // Background color for the app bar
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0), // General padding for the body
         child: Column(
           children: [
             // FAQ Section
@@ -41,40 +41,52 @@ class HelpPage extends StatelessWidget {
               child: ListView(
                 children: faqData.map((faq) {
                   return ExpansionTile(
-                    title: Text(faq['question']!,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    // Question Text
+                    title: Text(
+                      faq['question']!,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                     children: [
+                      // Answer Text with padding
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(faq['answer']!,
-                            style: TextStyle(fontSize: 16)),
+                        child: Text(
+                          faq['answer']!,
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ],
                   );
                 }).toList(),
               ),
             ),
+
             // Footer Section
-            Divider(), // Divider to separate FAQ section from footer
+            Divider(), // Divider to visually separate the FAQ section from the footer
+
+            // Footer with app information
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Application Name
                   Text(
                     'FitSync',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
+                  // Version Information
                   Text(
                     'Version 1.0.0',
                     textAlign: TextAlign.center,
                   ),
+                  // Copyright Information
                   Text(
-                    'Â© 2024 - FitSyncCo Ltd.',
+                    '© 2024 - FitSyncCo Ltd.',
                     textAlign: TextAlign.center,
                   ),
+                  // Short Description
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Text(
