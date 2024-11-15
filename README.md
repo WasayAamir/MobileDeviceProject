@@ -16,3 +16,28 @@
 -   working on implementing proper XP systems for each workout.
 -   working on implementing a functional level page that displays level and progress.
 -   working on adding friends list and functional friends leaderboard.
+
+### Team
+
+- **Author 1**: Yousaf Jan  
+  - **Email**: [yousafjan212004@gmail.com](mailto:yousafjan212004@gmail.com)  
+  - **GitHub**: [https://github.com/Yousaf-code](https://github.com/Yousaf-code)
+
+- **Author 2**: [Wasay Aamir]  
+  - **Email**: [wasayaamir5@gmail.com](mailto:wasayaamir5@gmail.com)  
+  - **GitHub**: [https://github.com/WasayAamir](https://github.com/WasayAamir))
+
+- **Author 3**: [Rahil Haque]  
+  - **Email**: [rahil.haq04@gmail.com](mailto:rahil.haq04@gmail.com)  
+  - **GitHub**: [https://github.com/Rahil2804](https://github.com/Rahil2804)
+
+ - **Author 4**: [Sabaoon Mohammad Jamil]  
+  - **Email**: [sabaoonmj@gmail.com](mailto:sabaoonmj@gmail.com)  
+  - **GitHub**: [https://github.com/sabaoonmj](https://github.com/sabaoonmj)
+
+- **Author 5**: [Yoosuf Mohamed Kamal]  
+  - **Email**: [yoosufmohamedkamal@gmail.com](mailto:yoosufmohamedkamal@gmail.com)  
+  - **GitHub**: [https://github.com/suf1009](https://github.com/suf1009)
+
+
+
