@@ -24,7 +24,7 @@
   - **GitHub**: [https://github.com/Yousaf-code](https://github.com/Yousaf-code)
 
 - **Author 2**: [Wasay Aamir]  
-  - **Email**: [author2email@example.com](mailto:author2email@example.com)  
+  - **Email**: [wasayaamir5@gmail.com](mailto:wasayaamir5@gmail.com)  
   - **GitHub**: [https://github.com/WasayAamir](https://github.com/WasayAamir))
 
 - **Author 3**: [Rahil Haque]  
@@ -32,12 +32,12 @@
   - **GitHub**: [https://github.com/Rahil2804](https://github.com/Rahil2804)
 
  - **Author 4**: [Sabaoon Mohammad Jamil]  
-  - **Email**: [author4email@example.com](mailto:author4email@example.com)  
-  - **GitHub**: [https://github.com/author4-username](https://github.com/author4-username)
+  - **Email**: [sabaoonmj@gmail.com](mailto:sabaoonmj@gmail.com)  
+  - **GitHub**: [https://github.com/sabaoonmj](https://github.com/sabaoonmj)
 
 - **Author 5**: [Yoosuf]  
-  - **Email**: [author3email@example.com](mailto:author3email@example.com)  
-  - **GitHub**: [https://github.com/author5-username](https://github.com/author5-username)
+  - **Email**: [yoosufmohamedkamal@gmail.com](mailto:yoosufmohamedkamal@gmail.com)  
+  - **GitHub**: [https://github.com/suf1009](https://github.com/suf1009)
 
 
 
