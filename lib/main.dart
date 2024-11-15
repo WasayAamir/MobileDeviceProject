@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:fitsync/firebase_api.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'screens/settings_database.dart';
@@ -12,6 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseApi().initNotifications();
 
   final settingsDatabase = SettingsDatabase();
   String themePreference = await settingsDatabase.getThemePreference() ?? 'light';
