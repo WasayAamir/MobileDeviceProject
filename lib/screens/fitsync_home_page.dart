@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../widgets/slide_widget.dart';
+import 'package:http/http.dart' as http;
 import '../widgets/progress_bar.dart';
 import 'workout_list_page.dart';
 import 'video_page.dart';
 import 'help_page.dart';
-import 'weekly_challenges_page.dart';
 import 'settings_page.dart';
 
 class FitsyncHomePage extends StatefulWidget {
@@ -23,6 +24,9 @@ class FitsyncHomePage extends StatefulWidget {
 }
 
 class _FitsyncHomePageState extends State<FitsyncHomePage> {
+  final String apiUrl = "https://my-json-server.typicode.com/Rahil2804/MockAPI/weekly_challenges";
+  List<Map<String, dynamic>> weeklyChallenges = [];
+
   final List<Map<String, dynamic>> workouts = [
     {
       'title': "Crunch's Tutorial",
@@ -63,6 +67,32 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
   final int level = 13;
   final int currentExp = 50;
   final int requiredExp = 100;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWeeklyChallenges();
+  }
+
+  Future<void> _fetchWeeklyChallenges() async {
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          weeklyChallenges = data.map((challenge) => {
+            'id': challenge['id'],
+            'title': challenge['title'],
+            'description': challenge['description'],
+          }).toList();
+        });
+      } else {
+        throw Exception("Failed to load challenges");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   void _showWorkoutDialog(BuildContext context, Map<String, dynamic> workout) {
     showDialog(
@@ -144,17 +174,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               },
             ),
             ListTile(
-              title: Text('Weekly Challenges'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WeeklyChallengesPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
               title: Text('Settings'),
               onTap: () {
                 Navigator.push(
@@ -218,22 +237,75 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             SizedBox(height: 20),
             Expanded(
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Progress on Goals',
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Weekly Challenges',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 10),
-                        ProgressBar(label: 'Goal 1', value: 0.7),
-                        SizedBox(height: 10),
-                        ProgressBar(label: 'Goal 2', value: 0.4),
-                        SizedBox(height: 10),
-                        ProgressBar(label: 'Goal 3', value: 0.6),
-                      ],
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: weeklyChallenges.length,
+                              itemBuilder: (context, index) {
+                                final challenge = weeklyChallenges[index];
+                                return Dismissible(
+                                  key: UniqueKey(), // Ensure each key is unique
+                                  direction: DismissDirection.endToStart,
+                                  onDismissed: (direction) {
+                                    setState(() {
+                                      // Remove the challenge from the list when swiped
+                                      weeklyChallenges.removeAt(index);
+                                    });
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('${challenge['title']} dismissed'),
+                                      ),
+                                    );
+                                  },
+                                  background: Container(
+                                    color: Colors.green,
+                                    alignment: Alignment.centerRight,
+                                    padding: EdgeInsets.symmetric(horizontal: 20),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  child: Card(
+                                    margin: EdgeInsets.symmetric(vertical: 5),
+                                    child: ListTile(
+                                      title: Text(challenge['title']),
+                                      subtitle: Text(challenge['description']),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(width: 20),
@@ -241,7 +313,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     child: Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.yellow,
+                        color: Colors.yellow[800],
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(

@@ -166,7 +166,6 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundColor: Colors.deepPurple,
       ),
       body: Container(
-        color: Colors.blue[200], // Background color
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Form(
