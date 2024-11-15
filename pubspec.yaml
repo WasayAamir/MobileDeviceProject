@@ -40,6 +40,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   youtube_player_flutter: ^9.1.1
   flutter_inappwebview: ^6.1.5
+  http: ^0.13.4
+  sqflite: ^2.0.0+4
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:

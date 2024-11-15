@@ -4,6 +4,7 @@ import '../widgets/progress_bar.dart'; // Import ProgressBar widget
 import 'workout_list_page.dart'; // Import workout list page
 import 'video_page.dart'; // Import Video Page
 import 'help_page.dart';
+import 'weekly_challenges_page.dart'; // Import Weekly Challenges Page
 
 class FitsyncHomePage extends StatefulWidget {
   final String username; // Accept username as a parameter
@@ -21,40 +22,35 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
   final List<Map<String, dynamic>> workouts = [
     {
       'title': "Crunch's Tutorial",
-      'imageUrl':
-      'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.jpg',
+      'imageUrl': 'https://www.spotebi.com/wp-content/uploads/2014/10/crunches-exercise-illustration.jpg',
       'videoUrl': 'https://www.youtube.com/watch?v=yzg6OTbsmcQ',
       'sets': 3,
       'reps': 15,
     },
     {
       'title': "Push-Ups Tutorial",
-      'imageUrl':
-      'https://tostpost.com/images/2018-Mar/28/da1c83d1c74739e363b38856d0a5b66b/1.jpg',
+      'imageUrl': 'https://tostpost.com/images/2018-Mar/28/da1c83d1c74739e363b38856d0a5b66b/1.jpg',
       'videoUrl': 'https://www.youtube.com/watch?v=_l3ySVKYVJ8',
       'sets': 4,
       'reps': 20,
     },
     {
       'title': "Sit-Ups Tutorial",
-      'imageUrl':
-      'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
+      'imageUrl': 'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
       'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
       'sets': 3,
       'reps': 12,
     },
     {
       'title': "Bicep Curls Tutorial",
-      'imageUrl':
-      'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
+      'imageUrl': 'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
       'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
       'sets': 4,
       'reps': 10,
     },
     {
       'title': "Leg Curls Tutorial",
-      'imageUrl':
-      'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
+      'imageUrl': 'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
       'videoUrl': 'https://www.youtube.com/watch?v=URL_HERE',
       'sets': 4,
       'reps': 12,
@@ -146,6 +142,17 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               },
             ),
             ListTile(
+              title: Text('Weekly Challenges'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WeeklyChallengesPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
               title: Text('Settings'),
               onTap: () {
                 // Handle navigation to Settings
@@ -195,7 +202,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                 }).toList(),
               ),
             ),
-
             SizedBox(height: 20),
             Expanded(
               child: Row(
