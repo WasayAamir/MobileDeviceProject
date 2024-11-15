@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
-import '../widgets/slide_widget.dart'; // Import slide widgets
-import '../widgets/progress_bar.dart'; // Import ProgressBar widget
-import 'workout_list_page.dart'; // Import workout list page
-import 'video_page.dart'; // Import Video Page
+import '../widgets/slide_widget.dart';
+import '../widgets/progress_bar.dart';
+import 'workout_list_page.dart';
+import 'video_page.dart';
 import 'help_page.dart';
-import 'weekly_challenges_page.dart'; // Import Weekly Challenges Page
+import 'weekly_challenges_page.dart';
+import 'settings_page.dart';
 
 class FitsyncHomePage extends StatefulWidget {
-  final String username; // Accept username as a parameter
+  final String username;
+  final Function(bool) onToggleTheme;
+  final bool isDarkMode;
 
-  FitsyncHomePage({required this.username});
+  FitsyncHomePage({
+    required this.username,
+    required this.onToggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   _FitsyncHomePageState createState() => _FitsyncHomePageState();
 }
 
 class _FitsyncHomePageState extends State<FitsyncHomePage> {
-  bool isSideNavOpen = false;
-
-  // Centralized list of workouts
   final List<Map<String, dynamic>> workouts = [
     {
       'title': "Crunch's Tutorial",
@@ -56,7 +60,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
       'reps': 12,
     },
   ];
-
   final int level = 13;
   final int currentExp = 50;
   final int requiredExp = 100;
@@ -70,9 +73,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           content: Text('Do you want to do this workout?'),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: Text('No'),
             ),
             TextButton(
@@ -120,16 +121,16 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
         ],
       ),
       drawer: Drawer(
-        backgroundColor: Colors.blue[100],
         child: ListView(
-          padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.deepPurple[400],
               ),
-              child: Text('Fitsync Menu',
-                  style: TextStyle(color: Colors.white, fontSize: 24)),
+              child: Text(
+                'Fitsync Menu',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
             ),
             ListTile(
               title: Text('Workout Tutorials'),
@@ -137,7 +138,8 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => WorkoutListPage(workouts: workouts)),
+                    builder: (context) => WorkoutListPage(workouts: workouts),
+                  ),
                 );
               },
             ),
@@ -155,7 +157,15 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Settings'),
               onTap: () {
-                // Handle navigation to Settings
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsPage(
+                      onToggleTheme: widget.onToggleTheme,
+                      isDarkMode: widget.isDarkMode,
+                    ),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -170,7 +180,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           ],
         ),
       ),
-      backgroundColor: Colors.blue[100],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -179,10 +188,14 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Level: $level',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                // Display the username passed to this page
-                Text(widget.username, style: TextStyle(fontSize: 20)),
+                Text(
+                  'Level: 13',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  widget.username,
+                  style: TextStyle(fontSize: 20),
+                ),
               ],
             ),
             SizedBox(height: 20),

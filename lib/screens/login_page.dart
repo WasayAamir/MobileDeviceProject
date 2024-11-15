@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'fitsync_home_page.dart'; // Import FitsyncHomePage
+import 'fitsync_home_page.dart';
 
 class LoginPage extends StatelessWidget {
+  final Function(bool) onToggleTheme;
+  final bool isDarkMode;
+
+  LoginPage({required this.onToggleTheme, required this.isDarkMode});
+
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -22,15 +27,17 @@ class LoginPage extends StatelessWidget {
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      // Credentials are correct; navigate to the home screen and pass username
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => FitsyncHomePage(username: username),
+          builder: (context) => FitsyncHomePage(
+            username: username,
+            onToggleTheme: onToggleTheme,
+            isDarkMode: isDarkMode,
+          ),
         ),
       );
     } else {
-      // Credentials are incorrect; show error
       _showErrorSnackbar(context, 'Login information does not exist');
     }
   }
@@ -79,7 +86,7 @@ class LoginPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => _login(context),
                   child: Text('Login'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
                 ),
                 TextButton(
                   onPressed: () {
@@ -127,3 +134,4 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
+
