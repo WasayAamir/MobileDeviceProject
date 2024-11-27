@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-// Stateful widget to display video and workout details
 class VideoPage extends StatefulWidget {
-  final String videoUrl; // URL of the YouTube video to play
-  final String title; // Title of the video/workout
-  final int sets; // Number of sets for the workout
-  final int reps; // Number of repetitions for the workout
+  final String videoUrl;
+  final String title;
+  final int sets;
+  final int reps;
 
-  // Constructor to initialize the video page with necessary data
   VideoPage({
     required this.videoUrl,
     required this.title,
@@ -21,28 +20,40 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> {
-  late YoutubePlayerController _controller; // Controller for the YouTube player
+  late YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
 
+    // Allow the device to rotate for this page
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+
     // Extract the video ID from the provided video URL
     final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
 
-    // Initialize the YouTube player controller with the video ID
+    // Initialize the YouTube player controller
     _controller = YoutubePlayerController(
       initialVideoId: videoId ?? '',
       flags: YoutubePlayerFlags(
-        autoPlay: true, // Automatically play the video when loaded
-        mute: false, // Video will not be muted by default
+        autoPlay: true,
+        mute: false,
       ),
     );
   }
 
   @override
   void dispose() {
-    // Dispose of the YouTube player controller to release resources
+    // Restrict orientation back to portrait-only when exiting the page
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+
+    // Dispose of the YouTube player controller
     _controller.dispose();
     super.dispose();
   }
@@ -50,39 +61,28 @@ class _VideoPageState extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // App bar with the workout title as its label
       appBar: AppBar(
         title: Text(widget.title),
         backgroundColor: Colors.deepPurple,
       ),
-
-      // Main content of the video page
       body: Padding(
-        padding: const EdgeInsets.all(16.0), // General padding for the content
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // YouTube Player widget to play the video
             YoutubePlayer(
               controller: _controller,
-              showVideoProgressIndicator: true, // Show video progress bar
-              progressIndicatorColor: Colors.blueAccent, // Set progress bar color
+              showVideoProgressIndicator: true,
+              progressIndicatorColor: Colors.blueAccent,
             ),
-
-            SizedBox(height: 20), // Space between the video and the workout details
-
-            // Workout Details Section Title
+            SizedBox(height: 20),
             Text(
               'Workout Details',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
-            SizedBox(height: 10), // Space between the title and the details table
-
-            // Table displaying workout sets and repetitions
+            SizedBox(height: 10),
             Table(
-              border: TableBorder.all(color: Colors.black), // Add border to the table
+              border: TableBorder.all(color: Colors.black),
               children: [
-                // Header row for Sets and Reps
                 TableRow(
                   children: [
                     Padding(
@@ -103,13 +103,12 @@ class _VideoPageState extends State<VideoPage> {
                     ),
                   ],
                 ),
-                // Data row for the provided sets and reps
                 TableRow(
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        '${widget.sets}', // Display the number of sets
+                        '${widget.sets}',
                         style: TextStyle(fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
@@ -117,7 +116,7 @@ class _VideoPageState extends State<VideoPage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        '${widget.reps}', // Display the number of reps
+                        '${widget.reps}',
                         style: TextStyle(fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
