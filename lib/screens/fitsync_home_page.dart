@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../widgets/slide_widget.dart';
 import 'package:http/http.dart' as http;
-import '../widgets/progress_bar.dart';
 import 'leveling_screen.dart';
 import 'workout_list_page.dart';
 import 'video_page.dart';
 import 'help_page.dart';
 import 'settings_page.dart';
+import 'friends_page.dart';
 
 class FitsyncHomePage extends StatefulWidget {
   final String username;
@@ -153,7 +153,12 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           IconButton(
             icon: Icon(Icons.people),
             onPressed: () {
-              // Placeholder for future friend's list functionality
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                  builder: (context) => FriendsPage()
+                  ),
+              );
             },
           ),
           IconButton(

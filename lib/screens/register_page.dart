@@ -57,7 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (password.isEmpty) {
       return 'Password cannot be empty'; // Check if password is empty
     }
-    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$').hasMatch(password)) {
+    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])[A-Za-z\d[^\w\s]{8,}$').hasMatch(password)){
       return 'Password must contain an uppercase, a lowercase, a number, and a symbol, or your password is less than 8 characters';
     }
     return null; // Return null if password meets requirements
