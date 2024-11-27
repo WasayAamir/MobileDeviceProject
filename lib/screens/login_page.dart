@@ -35,11 +35,22 @@ class LoginPage extends StatelessWidget {
 
     // If credentials are correct, navigate to the home page
     if (querySnapshot.docs.isNotEmpty) {
+      final userDoc = querySnapshot.docs.first;
+      final userData = userDoc.data();
+
+      // Extract additional data
+      final level = userData['Level'] ?? 'N/A';
+      final currentExp = userData['currentExp'] ?? 0;
+      final requiredExp = userData['requiredExp'] ?? 0;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => FitsyncHomePage(
             username: username,
+            level: level,
+            currentExp: currentExp,
+            requiredExp: requiredExp,
             onToggleTheme: onToggleTheme,
             isDarkMode: isDarkMode,
           ),
@@ -140,7 +151,7 @@ class LoginPage extends StatelessWidget {
                     ),
                     // Copyright Information
                     Text(
-                      '© 2024 - FitSyncCo Ltd.',
+                      'Â© 2024 - FitSyncCo Ltd.',
                       textAlign: TextAlign.center,
                     ),
                     Padding(

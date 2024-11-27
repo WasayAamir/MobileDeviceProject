@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsync/firebase_api.dart';
+import 'package:fitsync/screens/leveling_screen.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'screens/settings_database.dart';
@@ -83,8 +84,12 @@ class _FitsyncAppState extends State<FitsyncApp> {
         // Home Page Route
         '/home': (context) => FitsyncHomePage(
           username: '',
+          level: 1, // Default level
+          currentExp: 0, // Default experience points
+          requiredExp: 10, // Default required experience points
           onToggleTheme: _toggleTheme,
           isDarkMode: _themeMode == ThemeMode.dark,
+
         ),
 
         // Register Page Route
@@ -92,6 +97,14 @@ class _FitsyncAppState extends State<FitsyncApp> {
 
         // Settings Page Route
         '/settings': (context) => SettingsPage(
+          onToggleTheme: _toggleTheme,
+          isDarkMode: _themeMode == ThemeMode.dark,
+        ),
+        '/level': (context) => LevelUpScreen(
+          username: '',
+          level: 1, // Default level
+          currentExp: 0, // Default experience points
+          requiredExp: 10, // Default required experience points
           onToggleTheme: _toggleTheme,
           isDarkMode: _themeMode == ThemeMode.dark,
         ),

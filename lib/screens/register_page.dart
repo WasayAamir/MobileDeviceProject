@@ -153,6 +153,9 @@ class _RegisterPageState extends State<RegisterPage> {
         'Lastname': _lastNameController.text,
         'Username': _usernameController.text,
         'Password': _passwordController.text,
+        'Level': 1, // Initialize level to 1
+        'currentExp': 0,   // Initialize experience to 0
+        'requiredExp': 10,   // Initialize experience to 0
       });
 
       // Show a success Snackbar message
@@ -164,6 +167,7 @@ class _RegisterPageState extends State<RegisterPage> {
       _showErrorSnackbar("Error saving data: $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

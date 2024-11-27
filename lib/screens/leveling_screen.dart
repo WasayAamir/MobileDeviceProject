@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 
 class LevelUpScreen extends StatelessWidget {
-  final String username = 'suf1009'; // Username of the user
-  final int level = 15; // Current level of the user
-  final int currentExp = 205; // Current experience points
-  final int totalExp = 510; // Total experience required for next level
+  final String username;
+  final int level; // Add this
+  final int currentExp; // Add this
+  final int requiredExp; // Add this
+  final Function(bool) onToggleTheme;
+  final bool isDarkMode;
   final List<String> ribbons = ['assets/ribbon1.png']; // Paths for ribbon images to display
+
+  LevelUpScreen({
+    required this.username,
+    required this.level, // Add this
+    required this.currentExp, // Add this
+    required this.requiredExp, // Add this
+    required this.onToggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +36,7 @@ class LevelUpScreen extends StatelessWidget {
               children: [
                 // Circular progress indicator showing user's current experience level
                 CircularProgressIndicator(
-                  value: currentExp / totalExp, // Ratio of current experience to total experience
+                  value: currentExp / requiredExp, // Ratio of current experience to total experience
                   strokeWidth: 8.0, // Width of the progress circle
                   backgroundColor: Colors.grey.shade300, // Set background color for the circle
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent), // Color of the progress
@@ -51,7 +62,7 @@ class LevelUpScreen extends StatelessWidget {
 
             // Display Experience Points
             Text(
-              '$currentExp / $totalExp EXP', // Current and total experience points
+              '$currentExp / $requiredExp EXP', // Current and total experience points
               style: TextStyle(color: Colors.grey.shade600),
             ),
             SizedBox(height: 20), // Add space between widgets
