@@ -7,6 +7,7 @@ import 'workout_list_page.dart';
 import 'video_page.dart';
 import 'help_page.dart';
 import 'settings_page.dart';
+import 'friends_page.dart';
 
 class FitsyncHomePage extends StatefulWidget {
   final String username;
@@ -42,28 +43,8 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
       'sets': 4,
       'reps': 20,
     },
-    {
-      'title': "Sit-Ups Tutorial",
-      'imageUrl': 'https://www.cdn.spotebi.com/wp-content/uploads/2014/10/squat-exercise-illustration.jpg',
-      'videoUrl': 'https://www.youtube.com/watch?v=jDwoBqPH0jk&ab_channel=Howcast',
-      'sets': 3,
-      'reps': 12,
-    },
-    {
-      'title': "Bicep Curls Tutorial",
-      'imageUrl': 'https://i.pinimg.com/originals/8f/40/fd/8f40fdace543223c4043dfd1adf36cf6.png',
-      'videoUrl': 'https://www.youtube.com/watch?v=ykJmrZ5v0Oo&ab_channel=Howcast',
-      'sets': 4,
-      'reps': 10,
-    },
-    {
-      'title': "Leg Curls Tutorial",
-      'imageUrl': 'https://th.bing.com/th/id/R.5f2642f47b331e04d7b144b6813325c1?rik=OqYVd7pXpK4DiA&riu=http%3a%2f%2fworkoutlabs.com%2fwp-content%2fuploads%2fwatermarked%2fSeated_Leg_curl.png&ehk=8M7eWzedvaSSyv8JYhrI98Ld4WwTjo9hiw7Up8a4Ei4%3d&risl=&pid=ImgRaw&r=0',
-      'videoUrl': 'https://www.youtube.com/watch?v=Orxowest56U&ab_channel=RenaissancePeriodization',
-      'sets': 4,
-      'reps': 12,
-    },
   ];
+
   final int level = 13;
   final int currentExp = 50;
   final int requiredExp = 100;
@@ -71,10 +52,9 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
   @override
   void initState() {
     super.initState();
-    _fetchWeeklyChallenges(); // Fetching weekly challenges when the widget is initialized
+    _fetchWeeklyChallenges();
   }
 
-  // Function to fetch weekly challenges from the provided API URL
   Future<void> _fetchWeeklyChallenges() async {
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -92,11 +72,10 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
         throw Exception("Failed to load challenges");
       }
     } catch (e) {
-      print(e); // Print error if fetching challenges fails
+      print(e);
     }
   }
 
-  // Function to show a dialog when user taps on a workout
   void _showWorkoutDialog(BuildContext context, Map<String, dynamic> workout) {
     showDialog(
       context: context,
@@ -106,12 +85,12 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           content: Text('Do you want to do this workout?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(), // Dismiss dialog
+              onPressed: () => Navigator.of(context).pop(),
               child: Text('No'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss dialog
+                Navigator.of(context).pop();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -142,13 +121,18 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           IconButton(
             icon: Icon(Icons.people),
             onPressed: () {
-              // Placeholder for future friend's list functionality
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FriendsPage(),
+                ),
+              );
             },
           ),
           IconButton(
             icon: Icon(Icons.account_circle),
             onPressed: () {
-              Navigator.pushNamed(context, '/login'); // Navigate to login page
+              Navigator.pushNamed(context, '/login');
             },
           ),
         ],
@@ -168,7 +152,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Workout Tutorials'),
               onTap: () {
-                // Navigate to the workout list page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -180,7 +163,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Settings'),
               onTap: () {
-                // Navigate to the settings page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -195,7 +177,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Help'),
               onTap: () {
-                // Navigate to the help page
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => HelpPage()),
@@ -210,12 +191,11 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Displaying the user's level and username at the top
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Level: 13',
+                  'Level: $level',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -225,8 +205,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               ],
             ),
             SizedBox(height: 20),
-
-            // Horizontal list of workout tutorial widgets
             Container(
               height: 150,
               child: ListView(
@@ -244,12 +222,9 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               ),
             ),
             SizedBox(height: 20),
-
-            // Weekly challenges and friend's leaderboard side by side
             Expanded(
               child: Row(
                 children: [
-                  // Weekly Challenges Section
                   Expanded(
                     child: Container(
                       padding: EdgeInsets.all(8),
@@ -282,14 +257,12 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                               itemBuilder: (context, index) {
                                 final challenge = weeklyChallenges[index];
                                 return Dismissible(
-                                  key: UniqueKey(), // Ensure each key is unique
+                                  key: UniqueKey(),
                                   direction: DismissDirection.endToStart,
                                   onDismissed: (direction) {
                                     setState(() {
-                                      // Remove the challenge from the list when swiped
                                       weeklyChallenges.removeAt(index);
                                     });
-
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('${challenge['title']} dismissed'),
@@ -321,8 +294,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     ),
                   ),
                   SizedBox(width: 20),
-
-                  // Friend's Leaderboard Section
                   Expanded(
                     child: Container(
                       padding: EdgeInsets.all(16),
@@ -359,8 +330,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               ),
             ),
             SizedBox(height: 20),
-
-            // User experience level and progress section
             Expanded(
               child: Container(
                 padding: EdgeInsets.all(16),
