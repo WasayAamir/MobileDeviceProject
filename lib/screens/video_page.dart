@@ -42,6 +42,7 @@ class _VideoPageState extends State<VideoPage> {
       flags: YoutubePlayerFlags(
         autoPlay: true,
         mute: false,
+        controlsVisibleAtStart: true,
       ),
     );
   }
@@ -60,73 +61,91 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Detect orientation
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
-      appBar: AppBar(
+      appBar: isLandscape
+          ? null // Hide AppBar in landscape
+          : AppBar(
         title: Text(widget.title),
         backgroundColor: Colors.deepPurple,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            YoutubePlayer(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Video Player
+          Expanded(
+            child: YoutubePlayer(
               controller: _controller,
               showVideoProgressIndicator: true,
               progressIndicatorColor: Colors.blueAccent,
             ),
-            SizedBox(height: 20),
-            Text(
-              'Workout Details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          // Show Workout Details only in portrait mode
+          if (!isLandscape)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Text(
+                    'Workout Details',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Table(
+                    border: TableBorder.all(color: Colors.black),
+                    children: [
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Sets',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Reps',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${widget.sets}',
+                              style: TextStyle(fontSize: 16),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${widget.reps}',
+                              style: TextStyle(fontSize: 16),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 10),
-            Table(
-              border: TableBorder.all(color: Colors.black),
-              children: [
-                TableRow(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Sets',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Reps',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-                TableRow(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        '${widget.sets}',
-                        style: TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        '${widget.reps}',
-                        style: TextStyle(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
