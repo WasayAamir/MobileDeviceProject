@@ -117,6 +117,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
     return Scaffold(
       appBar: AppBar(
         title: Text('Friends'),
+        backgroundColor: Colors.deepPurple[400],
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -125,12 +126,21 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
         ],
         bottom: TabBar(
           controller: _tabController,
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.bold, // Makes the text bold
+            color: Colors.black, // Makes the text darker
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontWeight: FontWeight.normal, // Optional: Style for unselected tabs
+            color: Colors.grey, // Optional: Style for unselected tabs
+          ),
           tabs: [
             Tab(text: 'Friends'),
             Tab(text: 'Sent Requests'),
             Tab(text: 'Approved'),
           ],
         ),
+
       ),
       body: TabBarView(
         controller: _tabController,
