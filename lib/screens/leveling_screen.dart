@@ -15,6 +15,13 @@ class LevelUpScreen extends StatelessWidget {
     required int requiredExp,
   });
 
+  final List<String> avatarOptions = [
+    'lib/assets/avatar1.png',
+    'lib/assets/avatar2.jpg',
+    'lib/assets/avatar3.jpg',
+    'lib/assets/avatar4.jpg',
+  ];
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -46,6 +53,7 @@ class LevelUpScreen extends StatelessWidget {
           final userData = snapshot.data!.docs.first.data() as Map<String, dynamic>;
           final int currentExp = userData['currentExp'] ?? 0;
           final int level = userData['Level'] ?? 1;
+          final String currentAvatar = userData['avatar'] ?? 'assets/avatar1.png'; // Default avatar
           final int requiredExp = 100;
 
           return Center(
@@ -63,48 +71,86 @@ class LevelUpScreen extends StatelessWidget {
                         theme.colorScheme.secondary,
                       ),
                     ),
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage('assets/avatar.png'),
+                    GestureDetector(
+                      onTap: () => _showAvatarDialog(context, currentAvatar),
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: AssetImage(currentAvatar),
+                      ),
                     ),
                   ],
                 ),
                 SizedBox(height: 20),
-
                 Text(
                   'Lv. $level',
                   style: theme.textTheme.titleLarge,
                 ),
-
                 Text(
                   '$currentExp / $requiredExp EXP',
                   style: theme.textTheme.bodyMedium,
                 ),
                 SizedBox(height: 20),
-
                 Text(
                   username,
                   style: theme.textTheme.titleMedium,
                 ),
                 SizedBox(height: 20),
-
-                Text(
-                  'Medals',
-                  style: theme.textTheme.titleLarge,
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/ribbon1.png', width: 50),
-                    Image.asset('assets/ribbon1.png', width: 50),
-                  ],
-                ),
               ],
             ),
           );
         },
       ),
     );
+  }
+
+  // Function to show avatar selection dialog
+  void _showAvatarDialog(BuildContext context, String currentAvatar) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Avatar'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: avatarOptions.map((avatarPath) {
+                return GestureDetector(
+                  onTap: () async {
+                    await _updateAvatar(avatarPath); // Update avatar in Firestore
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage(avatarPath),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Function to update avatar in Firestore
+  Future<void> _updateAvatar(String newAvatar) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Fitsync Authentication')
+          .where('Username', isEqualTo: username)
+          .get()
+          .then((querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          var userDoc = querySnapshot.docs.first;
+          userDoc.reference.update({
+            'avatar': newAvatar,
+          });
+        }
+      });
+    } catch (e) {
+      print("Error updating avatar: $e");
+    }
   }
 }
