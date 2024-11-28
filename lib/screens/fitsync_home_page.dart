@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/slide_widget.dart';
 import 'package:http/http.dart' as http;
 import 'leveling_screen.dart';
@@ -72,15 +73,18 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     },
   ];
 
-  //final int level = 13;
-  //final int currentExp = 50;
-  //final int requiredExp = 100;
+  late int currentExp;
+  late int level;
+  final int requiredExp = 100;
 
   @override
   void initState() {
     super.initState();
-    _fetchWeeklyChallenges(); // Fetching weekly challenges when the widget is initialized
+    currentExp = widget.currentExp;
+    level = widget.level;
+    _fetchWeeklyChallenges();
   }
+
 
   // Function to fetch weekly challenges from the provided API URL
   Future<void> _fetchWeeklyChallenges() async {
@@ -140,6 +144,159 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     );
   }
 
+  void _showAddWorkoutDialog() {
+    TextEditingController workoutController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String selectedWorkout = ""; // Track the selected workout
+
+        return AlertDialog(
+          title: Text('Select Your Workout'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min, // Minimize dialog size
+                children: [
+                  for (var workout in ["Crunch's", "Push-ups", "Sit ups", "Bicep curls", "Leg curls"])
+                    RadioListTile<String>(
+                      title: Text(workout),
+                      value: workout,
+                      groupValue: selectedWorkout,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedWorkout = value!;
+                        });
+                      },
+                    ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog without action
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (selectedWorkout.isNotEmpty) {
+                  Navigator.of(context).pop(); // Close dialog
+
+                  // Add 5 EXP
+                  int newExp = currentExp + 5;
+
+                  // Level-up logic
+                  if (newExp >= requiredExp) {
+                    int newLevel = level + 1;
+                    newExp = newExp - requiredExp; // Carry over extra EXP if any
+
+                    // Update Firestore with new level and EXP
+                    await _updateFirestore(newLevel, newExp);
+
+                    setState(() {
+                      level = newLevel;
+                      currentExp = newExp;
+                    });
+
+                    // Show level-up dialog
+                    _showLevelUpDialog(newLevel);
+                  } else {
+                    // Just update EXP in Firestore
+                    await _updateFirestore(level, newExp);
+
+                    setState(() {
+                      currentExp = newExp;
+                    });
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Please select a workout!")),
+                  );
+                }
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _updateFirestore(int newLevel, int newExp) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('Fitsync Authentication')
+          .where('Username', isEqualTo: widget.username)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+
+        await FirebaseFirestore.instance
+            .collection('Fitsync Authentication')
+            .doc(doc.id)
+            .update({
+          'Level': newLevel,
+          'currentExp': newExp,
+        });
+      }
+    } catch (e) {
+      print("Error updating Firestore: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update Firestore!')),
+      );
+    }
+  }
+
+  void _showLevelUpDialog(int newLevel) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Congratulations!'),
+          content: Text('You leveled up to Level $newLevel!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  Future<void> _refreshUserData() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('Fitsync Authentication')
+          .where('Username', isEqualTo: widget.username)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final userData = querySnapshot.docs.first.data();
+
+        setState(() {
+          currentExp = userData['currentExp'] ?? currentExp;
+          level = userData['Level'] ?? level;
+        });
+
+        print("User data refreshed successfully!");
+      }
+    } catch (e) {
+      print("Error refreshing user data: $e");
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     int currentExp = widget.currentExp;
@@ -151,34 +308,52 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
         backgroundColor: Colors.deepPurple[400],
         actions: [
           IconButton(
+            icon: Icon(Icons.add), // New button for adding a workout
+            onPressed: _showAddWorkoutDialog,
+          ),
+          IconButton(
             icon: Icon(Icons.people),
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                  builder: (context) => FriendsPage()
-                  ),
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FriendsPage()
+                ),
               );
             },
           ),
           IconButton(
             icon: Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LevelUpScreen(
-                    username: widget.username,          // Pass the username
-                    level: widget.level,                // Pass the level
-                    currentExp: widget.currentExp,      // Pass the current experience
-                    requiredExp: widget.requiredExp,    // Pass the required experience
-                    onToggleTheme: widget.onToggleTheme, // Pass the theme toggle function
-                    isDarkMode: widget.isDarkMode,      // Pass the dark mode status
+            onPressed: () async {
+              final querySnapshot = await FirebaseFirestore.instance
+                  .collection('Fitsync Authentication')
+                  .where('Username', isEqualTo: widget.username)
+                  .get();
+
+              if (querySnapshot.docs.isNotEmpty) {
+                final userData = querySnapshot.docs.first.data();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LevelUpScreen(
+                      username: widget.username,
+                      level: userData['Level'] ?? widget.level,
+                      currentExp: userData['currentExp'] ?? widget.currentExp,
+                      requiredExp: widget.requiredExp,
+                      onToggleTheme: widget.onToggleTheme,
+                      isDarkMode: widget.isDarkMode,
+                    ),
                   ),
-                ),
-              );
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("No data found for this user")),
+                );
+              }
             },
           ),
+
         ],
       ),
       drawer: Drawer(

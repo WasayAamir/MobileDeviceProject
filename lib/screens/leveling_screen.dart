@@ -1,98 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LevelUpScreen extends StatelessWidget {
   final String username;
-  final int level;
-  final int currentExp;
-  final int requiredExp;
   final Function(bool) onToggleTheme;
   final bool isDarkMode;
-  final List<String> ribbons = ['assets/ribbon1.png'];
 
   LevelUpScreen({
     required this.username,
-    required this.level,
-    required this.currentExp,
-    required this.requiredExp,
     required this.onToggleTheme,
     required this.isDarkMode,
+    required int level,
+    required int currentExp,
+    required int requiredExp,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Use ThemeData for colors
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Leveling Screen'),
-        backgroundColor: Colors.deepPurple[400],
+        backgroundColor: theme.appBarTheme.backgroundColor,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Avatar and Experience Progress Indicator
-            Stack(
-              alignment: Alignment.center,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('Fitsync Authentication')
+            .where('Username', isEqualTo: username)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Text(
+                "No data found for user: $username",
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
+            );
+          }
+
+          final userData = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+          final int currentExp = userData['currentExp'] ?? 0;
+          final int level = userData['Level'] ?? 1;
+          final int requiredExp = 100;
+
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(
-                  value: currentExp / requiredExp,
-                  strokeWidth: 8.0,
-                  backgroundColor: theme.dividerColor,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.colorScheme.secondary,
-                  ),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: currentExp / requiredExp,
+                      strokeWidth: 8.0,
+                      backgroundColor: theme.dividerColor,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        theme.colorScheme.secondary,
+                      ),
+                    ),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage('assets/avatar.png'),
+                    ),
+                  ],
                 ),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/avatar.png'),
+                SizedBox(height: 20),
+
+                Text(
+                  'Lv. $level',
+                  style: theme.textTheme.titleLarge,
+                ),
+
+                Text(
+                  '$currentExp / $requiredExp EXP',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                SizedBox(height: 20),
+
+                Text(
+                  username,
+                  style: theme.textTheme.titleMedium,
+                ),
+                SizedBox(height: 20),
+
+                Text(
+                  'Medals',
+                  style: theme.textTheme.titleLarge,
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/ribbon1.png', width: 50),
+                    Image.asset('assets/ribbon1.png', width: 50),
+                  ],
                 ),
               ],
             ),
-            SizedBox(height: 20),
-
-            // Display User's Level
-            Text(
-              'Lv. $level',
-              style: theme.textTheme.titleLarge, // Updated from headline6
-            ),
-
-            // Display Experience Points
-            Text(
-              '$currentExp / $requiredExp EXP',
-              style: theme.textTheme.bodyMedium, // Updated from bodyText2
-            ),
-            SizedBox(height: 20),
-
-            // Display Username
-            Text(
-              username,
-              style: theme.textTheme.titleMedium, // Updated from subtitle1
-            ),
-            SizedBox(height: 20),
-
-            // Medals Section
-            Text(
-              'Medals',
-              style: theme.textTheme.titleLarge, // Updated from headline6
-            ),
-
-            // Display Medals as a Row of Images
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: ribbons.map((ribbon) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(
-                    ribbon,
-                    width: 50,
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
