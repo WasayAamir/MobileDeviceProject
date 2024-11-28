@@ -75,16 +75,16 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
 
   late int currentExp;
   late int level;
-  final int requiredExp = 100;
+  final int requiredExp = 100; // Keep this as it is or fetch from Firestore
 
   @override
   void initState() {
     super.initState();
+    // Initialize local variables with widget values
     currentExp = widget.currentExp;
     level = widget.level;
     _fetchWeeklyChallenges();
   }
-
 
   // Function to fetch weekly challenges from the provided API URL
   Future<void> _fetchWeeklyChallenges() async {
@@ -295,8 +295,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     int currentExp = widget.currentExp;
@@ -308,54 +306,35 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
         backgroundColor: Colors.deepPurple[400],
         actions: [
           IconButton(
-            icon: Icon(Icons.add), // New button for adding a workout
-            onPressed: _showAddWorkoutDialog,
-          ),
-          IconButton(
             icon: Icon(Icons.people),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => FriendsPage()
-                ),
+                MaterialPageRoute(builder: (context) => FriendsPage()),
               );
             },
           ),
           IconButton(
             icon: Icon(Icons.account_circle),
-            onPressed: () async {
-              final querySnapshot = await FirebaseFirestore.instance
-                  .collection('Fitsync Authentication')
-                  .where('Username', isEqualTo: widget.username)
-                  .get();
-
-              if (querySnapshot.docs.isNotEmpty) {
-                final userData = querySnapshot.docs.first.data();
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LevelUpScreen(
-                      username: widget.username,
-                      level: userData['Level'] ?? widget.level,
-                      currentExp: userData['currentExp'] ?? widget.currentExp,
-                      requiredExp: widget.requiredExp,
-                      onToggleTheme: widget.onToggleTheme,
-                      isDarkMode: widget.isDarkMode,
-                    ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LevelUpScreen(
+                    username: widget.username,
+                    level: widget.level,
+                    currentExp: widget.currentExp,
+                    requiredExp: widget.requiredExp,
+                    onToggleTheme: widget.onToggleTheme,
+                    isDarkMode: widget.isDarkMode,
                   ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("No data found for this user")),
-                );
-              }
+                ),
+              );
             },
           ),
-
         ],
       ),
+
       drawer: Drawer(
         child: ListView(
           children: <Widget>[
@@ -563,42 +542,57 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ),
             SizedBox(height: 20),
 
-            // User experience level and progress section
+            //Add workout
             Expanded(
-              child: Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Level $level",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              child: GestureDetector(
+                onTap: _showAddWorkoutDialog,
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple[50], // Soft background color
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
                     ),
-                    Text(widget.username, style: TextStyle(fontSize: 20)),
-                    SizedBox(height: 8),
-                    Stack(
-                      children: [
-                        Container(
-                          height: 10.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 6,
+                        spreadRadius: 2,
+                        offset: Offset(0, -2), // Shadow from bottom to give a floating effect
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: _showAddWorkoutDialog,  // Tap on the icon to show dialog
+                        child: Icon(
+                          Icons.add_circle_outline,
+                          size: 60,
+                          color: Colors.deepPurple[700],
                         ),
-                      ],
-                    ),
-                    SizedBox(height: 4.0),
-                    Text(
-                      "$currentExp / $requiredExp EXP",
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey[700]),
-                    ),
-                  ],
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Add Completed Workout",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple[700],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+
+
+
           ],
         ),
       ),
