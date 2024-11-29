@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+//class videopage
 class VideoPage extends StatefulWidget {
   final String videoUrl;
   final String title;
@@ -26,17 +27,15 @@ class _VideoPageState extends State<VideoPage> {
   void initState() {
     super.initState();
 
-    // Allow the device to rotate for this page
+    //rotation for device for watching videos
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
-    // Extract the video ID from the provided video URL
     final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
 
-    // Initialize the YouTube player controller
+    //youtube player
     _controller = YoutubePlayerController(
       initialVideoId: videoId ?? '',
       flags: YoutubePlayerFlags(
@@ -49,24 +48,22 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   void dispose() {
-    // Restrict orientation back to portrait-only when exiting the page
+    //make sure orientation fixes once you exit
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-
-    // Dispose of the YouTube player controller
+    //Dispose controller
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Detect orientation
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
       appBar: isLandscape
-          ? null // Hide AppBar in landscape
+          ? null
           : AppBar(
         title: Text(widget.title),
         backgroundColor: Colors.deepPurple,
@@ -74,7 +71,7 @@ class _VideoPageState extends State<VideoPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Video Player
+          //Video Player
           Expanded(
             child: YoutubePlayer(
               controller: _controller,
@@ -82,16 +79,15 @@ class _VideoPageState extends State<VideoPage> {
               progressIndicatorColor: Colors.blueAccent,
             ),
           ),
-          // Show Workout Details only in portrait mode
+          //workout details in portrait
           if (!isLandscape)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   SizedBox(height: 10),
-                  Text(
-                    'Workout Details',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  //Workout details
+                  Text('Workout Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 10),
@@ -99,20 +95,18 @@ class _VideoPageState extends State<VideoPage> {
                     border: TableBorder.all(color: Colors.black),
                     children: [
                       TableRow(
+                        //children padding
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Sets',
-                              style: TextStyle(
+                            child: Text('Sets', style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Reps',
+                            child: Text('Reps',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
