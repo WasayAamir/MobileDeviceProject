@@ -2,43 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'fitsync_home_page.dart';
 
-// Login Page Widget
+//class login page
 class LoginPage extends StatelessWidget {
-  // Props for managing theme toggle and dark mode state
+  //toggle for light/dark mode
   final Function(bool) onToggleTheme;
   final bool isDarkMode;
 
-  // Constructor
+  //Constructor
   LoginPage({required this.onToggleTheme, required this.isDarkMode});
 
-  // Controllers to capture user input for username and password
+  //controllers for username and password
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Function to handle the login process
+  //handling login
   Future<void> _login(BuildContext context) async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Validate input fields
     if (username.isEmpty || password.isEmpty) {
       _showErrorSnackbar(context, 'Please enter both username and password');
       return;
     }
-
-    // Query Firestore to check if the username and password match a record
+    //checking if username/password exists and matches
     final querySnapshot = await FirebaseFirestore.instance
         .collection('Fitsync Authentication')
         .where('Username', isEqualTo: username)
         .where('Password', isEqualTo: password)
         .get();
 
-    // If credentials are correct, navigate to the home page
+    //go to homepage if correct
     if (querySnapshot.docs.isNotEmpty) {
       final userDoc = querySnapshot.docs.first;
       final userData = userDoc.data();
-
-      // Extract additional data
+      // get some user data
       final level = userData['Level'] ?? 'N/A';
       final currentExp = userData['currentExp'] ?? 0;
       final requiredExp = userData['requiredExp'] ?? 0;
@@ -57,12 +54,12 @@ class LoginPage extends StatelessWidget {
         ),
       );
     } else {
-      // Show error message if login fails
+      //error snackbar
       _showErrorSnackbar(context, 'Login information does not exist');
     }
   }
 
-  // Function to display an error message
+  //displaying error
   void _showErrorSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -75,89 +72,89 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //appbar
       appBar: AppBar(
         title: Text('Login'),
-        backgroundColor: Colors.deepPurple, // Set the background color of the app bar
+        backgroundColor: Colors.deepPurple,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0), // Padding for the entire body
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Username Input Field
+            //Username Input
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
-                labelText: 'Username', // Label for the text field
-                border: OutlineInputBorder(), // Outline border for better visibility
+                labelText: 'Username',
+                border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20), // Add space between input fields
+            SizedBox(height: 20),
 
-            // Password Input Field
+            //Password Input
             TextField(
               controller: _passwordController,
               decoration: InputDecoration(
-                labelText: 'Password', // Label for the text field
-                border: OutlineInputBorder(), // Outline border for better visibility
+                labelText: 'Password',
+                border: OutlineInputBorder(),
               ),
-              obscureText: true, // Hide text for security reasons
+              //hiding password text
+              obscureText: true,
             ),
-            SizedBox(height: 20), // Add space between input fields
+            SizedBox(height: 20),
 
-            // Row for Login and Register buttons
+            //login and register buttons row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Login Button
+                //login
                 ElevatedButton(
-                  onPressed: () => _login(context), // Trigger login when pressed
+                  //login when pressed
+                  onPressed: () => _login(context),
                   child: Text('Login'),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
                 ),
 
-                // Register Button
+                //register
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/register'); // Navigate to register page
+                    //go to register page
+                    Navigator.pushNamed(context, '/register');
                   },
                   child: Text('Register'),
                 ),
               ],
             ),
 
-            Spacer(), // Pushes the divider and footer to the bottom
-
-            // Divider to separate the form from the footer section
+            Spacer(),
+            //divider for footer
             Divider(),
 
-            // Footer Section
+            //Footer space
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // App Title
+                    //title
                     Text(
                       'FitSync',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
-                    // Version Information
+                    //Version Info
                     Text(
                       'Version 1.0.0',
                       textAlign: TextAlign.center,
                     ),
-                    // Copyright Information
-                    Text(
-                      'Â© 2024 - FitSyncCo Ltd.',
-                      textAlign: TextAlign.center,
-                    ),
+                    Text('Â© 2024 - FitSyncCo Ltd.',
+                      textAlign: TextAlign.center,),
                     Padding(
                       padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        'This app helps people with their fitness goals.',
+                      //discription
+                      child: Text('This app helps people with their fitness goals.',
                         textAlign: TextAlign.center,
                       ),
                     ),

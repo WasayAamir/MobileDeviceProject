@@ -61,9 +61,8 @@ class HelpPage extends StatelessWidget {
                 }).toList(),
               ),
             ),
-
-            // Footer Section
-            Divider(), //Divider for footer section
+            //Divider for footer section
+            Divider(),
 
             //Footer app info
             Padding(
@@ -87,7 +86,7 @@ class HelpPage extends StatelessWidget {
                     '© 2024 - FitSyncCo Ltd.',
                     textAlign: TextAlign.center,
                   ),
-                  //Short Description
+                  //Description
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Text(

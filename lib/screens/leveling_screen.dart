@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+//class levelUp
 class LevelUpScreen extends StatelessWidget {
   final String username;
   final Function(bool) onToggleTheme;
@@ -15,19 +16,22 @@ class LevelUpScreen extends StatelessWidget {
     required int requiredExp,
   });
 
-  final List<String> avatarOptions = [
+  //avatars
+  final List<String> avatars = [
     'lib/assets/avatar1.png',
     'lib/assets/avatar2.jpg',
     'lib/assets/avatar3.jpg',
     'lib/assets/avatar4.jpg',
   ];
 
+  //theme
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
+        //leveling screen
         title: Text('Leveling Screen'),
         backgroundColor: theme.appBarTheme.backgroundColor,
       ),
@@ -49,11 +53,11 @@ class LevelUpScreen extends StatelessWidget {
               ),
             );
           }
-
+          //user data
           final userData = snapshot.data!.docs.first.data() as Map<String, dynamic>;
           final int currentExp = userData['currentExp'] ?? 0;
           final int level = userData['Level'] ?? 1;
-          final String currentAvatar = userData['avatar'] ?? 'assets/avatar1.png'; // Default avatar
+          final String currentAvatar = userData['avatar'] ?? 'assets/avatar1.png';
           final int requiredExp = 100;
 
           return Center(
@@ -63,6 +67,7 @@ class LevelUpScreen extends StatelessWidget {
                 Stack(
                   alignment: Alignment.center,
                   children: [
+                    //circulerprogressindictaor
                     CircularProgressIndicator(
                       value: currentExp / requiredExp,
                       strokeWidth: 8.0,
@@ -71,6 +76,7 @@ class LevelUpScreen extends StatelessWidget {
                         theme.colorScheme.secondary,
                       ),
                     ),
+                    //selecting your avatar
                     GestureDetector(
                       onTap: () => _showAvatarDialog(context, currentAvatar),
                       child: CircleAvatar(
@@ -81,15 +87,18 @@ class LevelUpScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 20),
+                //level
                 Text(
                   'Lv. $level',
                   style: theme.textTheme.titleLarge,
                 ),
+                //exp
                 Text(
                   '$currentExp / $requiredExp EXP',
                   style: theme.textTheme.bodyMedium,
                 ),
                 SizedBox(height: 20),
+                //user's username
                 Text(
                   username,
                   style: theme.textTheme.titleMedium,
@@ -103,23 +112,26 @@ class LevelUpScreen extends StatelessWidget {
     );
   }
 
-  // Function to show avatar selection dialog
+  //avatar selection
   void _showAvatarDialog(BuildContext context, String currentAvatar) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          //select avatar
           title: Text('Select Avatar'),
           content: SingleChildScrollView(
             child: Column(
-              children: avatarOptions.map((avatarPath) {
+              children: avatars.map((avatarPath) {
                 return GestureDetector(
                   onTap: () async {
-                    await _updateAvatar(avatarPath); // Update avatar in Firestore
-                    Navigator.of(context).pop(); // Close the dialog
+                    //updating avatar
+                    await _updateAvatar(avatarPath);
+                    Navigator.of(context).pop();
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    //avatar and size
                     child: CircleAvatar(
                       radius: 30,
                       backgroundImage: AssetImage(avatarPath),
@@ -134,7 +146,7 @@ class LevelUpScreen extends StatelessWidget {
     );
   }
 
-  // Function to update avatar in Firestore
+  //updating avatar with firebase
   Future<void> _updateAvatar(String newAvatar) async {
     try {
       await FirebaseFirestore.instance
