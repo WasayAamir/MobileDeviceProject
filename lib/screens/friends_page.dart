@@ -156,8 +156,13 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
         List<String> senderFriends = List<String>.from(senderData['friends'] ?? []);
         senderFriends.add(widget.username);
 
+        // Remove the current user's username from the sender's "sentRequest"
+        List<String> senderSentRequests = List<String>.from(senderData['sentRequest'] ?? []);
+        senderSentRequests.remove(widget.username);
+
         await collectionRef.doc(senderDoc.id).update({
           'friends': senderFriends,
+          'sentRequest': senderSentRequests,
         });
 
         setState(() {
@@ -258,7 +263,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           tabs: [
             Tab(text: 'Friends'),
             Tab(text: 'Sent Requests'),
-            Tab(text: 'Approved'),
+            Tab(text: 'Approve'),
           ],
         ),
       ),
