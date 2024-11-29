@@ -544,7 +544,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               FutureBuilder<QuerySnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('Fitsync Authentication')
-                    .where('Username', isEqualTo: widget.username) // Replace with the current user's username
+                    .where('Username', isEqualTo: widget.username)
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -613,14 +613,23 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
 
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: friendsData.asMap().entries.map((entry) {
+                            children: (friendsData
+                                .map((friend) => {
+                              'Username': friend['Username'],
+                              'Level': friend['Level'] ?? 0, // Default to 0 if Level is null
+                            })
+                                .toList()
+                              ..sort((a, b) => (b['Level'] as int).compareTo(a['Level'] as int))) // Sort by Level descending
+                                .asMap()
+                                .entries
+                                .map<Widget>((entry) { // Ensure each entry is mapped to a Widget
                               int index = entry.key;
                               var friend = entry.value;
                               return Text(
                                 "${index + 1}. ${friend['Username']} - Level ${friend['Level']}",
                                 style: TextStyle(fontSize: 16),
                               );
-                            }).toList(),
+                            }).toList(), // Convert the mapped entries into a List<Widget>
                           );
                         },
                       );
