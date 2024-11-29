@@ -145,7 +145,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
   }
 
   void _showAddWorkoutDialog() {
-    TextEditingController workoutController = TextEditingController();
 
     showDialog(
       context: context,
@@ -272,29 +271,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     );
   }
 
-
-  Future<void> _refreshUserData() async {
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('Fitsync Authentication')
-          .where('Username', isEqualTo: widget.username)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        final userData = querySnapshot.docs.first.data();
-
-        setState(() {
-          currentExp = userData['currentExp'] ?? currentExp;
-          level = userData['Level'] ?? level;
-        });
-
-        print("User data refreshed successfully!");
-      }
-    } catch (e) {
-      print("Error refreshing user data: $e");
-    }
-  }
-
   Future<List<Map<String, dynamic>>> _fetchFriendsData(List<String> friendsUsernames) async {
     List<Map<String, dynamic>> friendsData = [];
     for (var username in friendsUsernames) {
@@ -312,7 +288,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    int level = widget.level;
     return Scaffold(
       appBar: AppBar(
         title: Text('Fitsync Homepage'),
@@ -409,16 +384,43 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Level: $level',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                // Display Level using StreamBuilder
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('Fitsync Authentication')
+                      .where('Username', isEqualTo: widget.username)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+
+                    if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Text(
+                        'Level: N/A',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      );
+                    }
+
+                    // Extract the level from the first matching document
+                    final userDoc = snapshot.data!.docs.first;
+                    final level = userDoc['Level'] ?? 'N/A';
+
+                    return Text(
+                      'Level: $level',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    );
+                  },
                 ),
+
+                // Display username
                 Text(
                   widget.username,
                   style: TextStyle(fontSize: 20),
                 ),
               ],
             ),
+
             SizedBox(height: 20),
 
             // Horizontal list of workout tutorial widgets
@@ -472,45 +474,98 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                           ),
                           SizedBox(height: 10),
                           Expanded(
-                            child: ListView.builder(
-                              itemCount: weeklyChallenges.length,
-                              itemBuilder: (context, index) {
-                                final challenge = weeklyChallenges[index];
-                                return Dismissible(
-                                  key: UniqueKey(), // Ensure each key is unique
-                                  direction: DismissDirection.endToStart,
-                                  onDismissed: (direction) {
-                                    setState(() {
-                                      // Remove the challenge from the list when swiped
-                                      weeklyChallenges.removeAt(index);
-                                    });
+                            child: Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
 
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('${challenge['title']} dismissed'),
-                                      ),
-                                    );
-                                  },
-                                  background: Container(
-                                    color: Colors.green,
-                                    alignment: Alignment.centerRight,
-                                    padding: EdgeInsets.symmetric(horizontal: 20),
-                                    child: Icon(
-                                      Icons.check,
-                                      color: Colors.grey,
+                                  SizedBox(height: 10),
+                                  Expanded(
+                                    child: ListView.builder(
+                                      itemCount: weeklyChallenges.length,
+                                      itemBuilder: (context, index) {
+                                        final challenge = weeklyChallenges[index];
+                                        return Dismissible(
+                                          key: UniqueKey(), // Ensure each key is unique
+                                          direction: DismissDirection.endToStart,
+                                          onDismissed: (direction) async {
+                                            setState(() {
+                                              // Remove the challenge from the list when swiped
+                                              weeklyChallenges.removeAt(index);
+                                            });
+
+                                            // Increase user's XP by 10
+                                            int newExp = currentExp + 10;
+
+                                            // Check for level-up
+                                            if (newExp >= requiredExp) {
+                                              int newLevel = level + 1;
+                                              newExp = newExp - requiredExp;
+
+                                              // Update Firestore with new level and XP
+                                              await _updateFirestore(newLevel, newExp);
+
+                                              setState(() {
+                                                level = newLevel;
+                                                currentExp = newExp;
+                                              });
+
+                                              // Show level-up dialog
+                                              _showLevelUpDialog(newLevel);
+                                            } else {
+                                              // Update only XP in Firestore
+                                              await _updateFirestore(level, newExp);
+
+                                              setState(() {
+                                                currentExp = newExp;
+                                              });
+                                            }
+
+                                            // Show a confirmation SnackBar
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Completed ${challenge['title']}! +10 XP'),
+                                              ),
+                                            );
+                                          },
+                                          background: Container(
+                                            color: Colors.green,
+                                            alignment: Alignment.centerRight,
+                                            padding: EdgeInsets.symmetric(horizontal: 20),
+                                            child: Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          child: Card(
+                                            margin: EdgeInsets.symmetric(vertical: 5),
+                                            child: ListTile(
+                                              title: Text(challenge['title']),
+                                              subtitle: Text(challenge['description']),
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
-                                  child: Card(
-                                    margin: EdgeInsets.symmetric(vertical: 5),
-                                    child: ListTile(
-                                      title: Text(challenge['title']),
-                                      subtitle: Text(challenge['description']),
-                                    ),
-                                  ),
-                                );
-                              },
+                                ],
+                              ),
                             ),
                           ),
+
                         ],
                       ),
                     ),
