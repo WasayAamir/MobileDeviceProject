@@ -295,10 +295,23 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> _fetchFriendsData(List<String> friendsUsernames) async {
+    List<Map<String, dynamic>> friendsData = [];
+    for (var username in friendsUsernames) {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('Fitsync Authentication')
+          .where('Username', isEqualTo: username)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        friendsData.add(querySnapshot.docs.first.data() as Map<String, dynamic>);
+      }
+    }
+    return friendsData;
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    int currentExp = widget.currentExp;
-    int requiredExp = widget.requiredExp;
     int level = widget.level;
     return Scaffold(
       appBar: AppBar(
@@ -310,7 +323,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FriendsPage()),
+                MaterialPageRoute(builder: (context) => FriendsPage(username: widget.username)),
               );
             },
           ),
@@ -505,38 +518,120 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                   SizedBox(width: 20),
 
                   // Friend's Leaderboard Section
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.yellow[800],
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
+      Expanded(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.yellow[800],
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Friend's Leaderboard",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              FutureBuilder<QuerySnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('Fitsync Authentication')
+                    .where('Username', isEqualTo: widget.username) // Replace with the current user's username
+                    .get(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Text(
+                        "User data not found.",
+                        style: TextStyle(fontSize: 16),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Friend's Leaderboard",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                    );
+                  }
+
+                  // Get the user's document ID
+                  final userDocId = snapshot.data!.docs.first.id;
+
+                  return StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('Fitsync Authentication')
+                        .doc(userDocId)
+                        .snapshots(),
+                    builder: (context, userSnapshot) {
+                      if (userSnapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                        return Center(
+                          child: Text(
+                            "No friends data available.",
+                            style: TextStyle(fontSize: 16),
                           ),
-                          SizedBox(height: 10),
-                          Text('1. Friend 1 - Score'),
-                          Text('2. Friend 2 - Score'),
-                          Text('3. Friend 3 - Score'),
-                          Text('4. Friend 4 - Score'),
-                        ],
-                      ),
-                    ),
-                  ),
+                        );
+                      }
+
+                      final userData =
+                      userSnapshot.data!.data() as Map<String, dynamic>;
+                      final friendsList = List<String>.from(userData['friends'] ?? []);
+
+                      if (friendsList.isEmpty) {
+                        return Text(
+                          "No friends added yet.",
+                          style: TextStyle(fontSize: 16),
+                        );
+                      }
+
+                      return FutureBuilder<List<Map<String, dynamic>>>(
+                        future: _fetchFriendsData(friendsList),
+                        builder: (context, friendsSnapshot) {
+                          if (friendsSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+
+                          if (!friendsSnapshot.hasData ||
+                              friendsSnapshot.data!.isEmpty) {
+                            return Text(
+                              "No data available for friends.",
+                              style: TextStyle(fontSize: 16),
+                            );
+                          }
+
+                          final friendsData = friendsSnapshot.data!;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: friendsData.asMap().entries.map((entry) {
+                              int index = entry.key;
+                              var friend = entry.value;
+                              return Text(
+                                "${index + 1}. ${friend['Username']} - Level ${friend['Level']}",
+                                style: TextStyle(fontSize: 16),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
                 ],
               ),
             ),
@@ -590,9 +685,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                 ),
               ),
             ),
-
-
-
           ],
         ),
       ),
