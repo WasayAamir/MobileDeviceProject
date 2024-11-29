@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Registration Page for Users to Sign Up
+//clas register page
 class RegisterPage extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Controllers to handle input from the registration form fields
+  //controllers input
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -16,87 +16,88 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
 
-  // GlobalKey to manage form validation
+  //GlobalKey
   final _formKey = GlobalKey<FormState>();
 
-  // Variable to check email availability
+  //checking email availibility
   bool _isEmailAvailable = true;
 
-  // Reference to Firestore collection for user data
+  //firestore collection
   final CollectionReference usersCollection = FirebaseFirestore.instance.collection('Fitsync Authentication');
 
-  // Function to check if the email already exists in Firestore
+  //checking if email already exists
   Future<void> _checkEmailExists() async {
     final querySnapshot = await usersCollection
         .where('Email', isEqualTo: _emailController.text)
         .get();
 
     setState(() {
-      _isEmailAvailable = querySnapshot.docs.isEmpty; // If no documents match, email is available
+      _isEmailAvailable = querySnapshot.docs.isEmpty;
     });
   }
 
-  // Email validation function
+  //making sure email is validate
   String? _validateEmail() {
     final email = _emailController.text;
     if (email.isEmpty) {
-      return 'Please enter your email'; // Check if email is empty
+      return 'Please enter your email';
     }
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-      return 'Enter a valid email address'; // Validate email format
+      return 'Enter a valid email address';
     }
     if (!_isEmailAvailable) {
-      return 'Email already exists'; // Check if email is already registered
+      return 'Email already exists';
     }
-    return null; // Return null if email is valid
+    return null;
   }
 
-  // Password validation function
+  //validate password, making sure all conditions match
   String? _validatePassword() {
     final password = _passwordController.text;
     if (password.isEmpty) {
-      return 'Password cannot be empty'; // Check if password is empty
+      return 'Password cannot be empty';
     }
-    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])[A-Za-z\d[^\w\s]{8,}$').hasMatch(password)){
+    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$').hasMatch(password)) {
       return 'Password must contain an uppercase, a lowercase, a number, and a symbol, or your password is less than 8 characters';
     }
-    return null; // Return null if password meets requirements
+    return null;
   }
 
-  // Confirm password validation function
+  //confirm password
   String? _validateConfirmPassword() {
     if (_confirmPasswordController.text != _passwordController.text) {
-      return 'Passwords do not match'; // Ensure passwords are identical
+      return 'Passwords do not match';
     }
-    return null; // Return null if passwords match
+    return null;
   }
 
-  // Username validation function
+  //validate username
   String? _validateUsername() {
     final username = _usernameController.text;
+    //if username empty then enter username
     if (username.isEmpty) {
-      return 'Please enter a username'; // Ensure username is not empty
+      return 'Please enter a username';
     }
-    return null; // Return null if username is valid
+    return null;
   }
 
-  // First name validation function
+  //validate first name
   String? _validateFirstName() {
     if (_firstNameController.text.isEmpty) {
-      return 'Please enter your first name'; // Ensure first name is provided
+      return 'Please enter your first name';
     }
-    return null; // Return null if first name is valid
+    return null;
   }
 
-  // Last name validation function
+  //validate last name
   String? _validateLastName() {
     if (_lastNameController.text.isEmpty) {
-      return 'Please enter your last name'; // Ensure last name is provided
+      return 'Please enter your last name';
     }
-    return null; // Return null if last name is valid
+    return null;
   }
 
-  // Function to show error messages using a Snackbar
+  //snackbar error msg
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -106,12 +107,12 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // Function to validate all fields and submit if valid
+  //validate it all and submit
   Future<void> _validateAndSubmit() async {
-    // First check if the email exists
+    //check email exists
     await _checkEmailExists();
 
-    // Perform validation checks for each input field
+    //validate all
     final firstNameError = _validateFirstName();
     final lastNameError = _validateLastName();
     final emailError = _validateEmail();
@@ -119,7 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final passwordError = _validatePassword();
     final confirmPasswordError = _validateConfirmPassword();
 
-    // Show the first validation error encountered
+    //Show the first validation error encountered
     if (firstNameError != null) {
       _showErrorSnackbar(firstNameError);
       return;
@@ -145,7 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // If all validations pass, save data to Firestore
+    //save data to firebase
     try {
       await usersCollection.add({
         'Email': _emailController.text,
@@ -153,15 +154,16 @@ class _RegisterPageState extends State<RegisterPage> {
         'Lastname': _lastNameController.text,
         'Username': _usernameController.text,
         'Password': _passwordController.text,
-        'Level': 1, // Initialize level to 1
-        'currentExp': 0,   // Initialize experience to 0
-        'requiredExp': 100,   // Initialize experience to 0
+        //initilize
+        'Level': 1,
+        'currentExp': 0,
+        'requiredExp': 100,
       });
 
-      // Show a success Snackbar message
+      //snackbar
       _showErrorSnackbar("Registration successful!");
 
-      // Navigate to the login page instead of the home page
+      //go to login page
       Navigator.pushNamed(context, '/login');
     } catch (e) {
       _showErrorSnackbar("Error saving data: $e");
@@ -172,9 +174,10 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //app bar
       appBar: AppBar(
         title: Text('Register'),
-        backgroundColor: Colors.deepPurple, // Set background color for AppBar
+        backgroundColor: Colors.deepPurple,
       ),
       body: Container(
         child: SingleChildScrollView(
@@ -184,61 +187,61 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // First Name Field
                 TextFormField(
                   controller: _firstNameController,
                   decoration: InputDecoration(
-                    labelText: 'First Name', // Label for first name
+                    //first name
+                    labelText: 'First Name',
                   ),
                 ),
-                SizedBox(height: 20), // Space between fields
+                SizedBox(height: 20),
 
                 // Last Name Field
                 TextFormField(
                   controller: _lastNameController,
                   decoration: InputDecoration(
-                    labelText: 'Last Name', // Label for last name
+                    //last name
+                    labelText: 'Last Name',
                   ),
                 ),
-                SizedBox(height: 20), // Space between fields
-
-                // Email Field
+                SizedBox(height: 20),
+                //email
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
                 ),
-                SizedBox(height: 20), // Space between fields
+                SizedBox(height: 20),
 
-                // Username Field
+                //Username
                 TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(labelText: 'Username'),
                 ),
-                SizedBox(height: 20), // Space between fields
+                SizedBox(height: 20),
 
                 // Password Field
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(labelText: 'Password'),
-                  obscureText: true, // Hide the password text
+                  obscureText: true,
                 ),
-                SizedBox(height: 20), // Space between fields
+                SizedBox(height: 20),
 
-                // Confirm Password Field
+                //confirming password
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(labelText: 'Confirm Password'),
-                  obscureText: true, // Hide the password text
+                  obscureText: true,
                 ),
-                SizedBox(height: 20), // Space between fields
+                SizedBox(height: 20),
 
-                // Sign Up Button
+                //sign up
                 ElevatedButton(
-                  onPressed: _validateAndSubmit, // Trigger the submit function
+                  onPressed: _validateAndSubmit,
                   child: Text('Sign Up'),
                 ),
-                SizedBox(height: 400), // Placeholder for spacing
+                SizedBox(height: 400),
               ],
             ),
           ),
