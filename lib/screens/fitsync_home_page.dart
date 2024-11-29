@@ -145,7 +145,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
   }
 
   void _showAddWorkoutDialog() {
-    TextEditingController workoutController = TextEditingController();
 
     showDialog(
       context: context,
@@ -272,29 +271,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     );
   }
 
-
-  Future<void> _refreshUserData() async {
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('Fitsync Authentication')
-          .where('Username', isEqualTo: widget.username)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        final userData = querySnapshot.docs.first.data();
-
-        setState(() {
-          currentExp = userData['currentExp'] ?? currentExp;
-          level = userData['Level'] ?? level;
-        });
-
-        print("User data refreshed successfully!");
-      }
-    } catch (e) {
-      print("Error refreshing user data: $e");
-    }
-  }
-
   Future<List<Map<String, dynamic>>> _fetchFriendsData(List<String> friendsUsernames) async {
     List<Map<String, dynamic>> friendsData = [];
     for (var username in friendsUsernames) {
@@ -312,7 +288,6 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    int level = widget.level;
     return Scaffold(
       appBar: AppBar(
         title: Text('Fitsync Homepage'),
@@ -409,16 +384,43 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Level: $level',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                // Display Level using StreamBuilder
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('Fitsync Authentication')
+                      .where('Username', isEqualTo: widget.username)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+
+                    if (snapshot.hasError || !snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Text(
+                        'Level: N/A',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      );
+                    }
+
+                    // Extract the level from the first matching document
+                    final userDoc = snapshot.data!.docs.first;
+                    final level = userDoc['Level'] ?? 'N/A';
+
+                    return Text(
+                      'Level: $level',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    );
+                  },
                 ),
+
+                // Display username
                 Text(
                   widget.username,
                   style: TextStyle(fontSize: 20),
                 ),
               ],
             ),
+
             SizedBox(height: 20),
 
             // Horizontal list of workout tutorial widgets
