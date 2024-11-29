@@ -63,7 +63,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
         // Get the recipient's `receivedRequests` list
         List<String> receivedRequests = List<String>.from(recipientData['receivedRequests'] ?? []);
 
-        // Avoid duplicate requests
+        // Avoid duplicate requests in the recipient's `receivedRequests`
         if (receivedRequests.contains(widget.username)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Request already sent to $username.")),
@@ -82,19 +82,23 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
         if (currentUserDoc.docs.isNotEmpty) {
           var currentUserData = currentUserDoc.docs.first.data() as Map<String, dynamic>;
           List<String> sentRequests = List<String>.from(currentUserData['sentRequest'] ?? []);
-          sentRequests.add(username);
 
-          await collectionRef.doc(currentUserDoc.docs.first.id).update({
-            'sentRequest': sentRequests,
-          });
+          // Avoid duplicate entries in the current user's `sentRequests`
+          if (!sentRequests.contains(username)) {
+            sentRequests.add(username);
 
-          setState(() {
-            this.sentRequests.add(username); // Update local state
-          });
+            await collectionRef.doc(currentUserDoc.docs.first.id).update({
+              'sentRequest': sentRequests,
+            });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Friend request sent to $username.")),
-          );
+            setState(() {
+              this.sentRequests = List<String>.from(sentRequests); // Sync local state with Firestore
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Friend request sent to $username.")),
+            );
+          }
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +112,8 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
       );
     }
   }
+
+
 
 
   // Accept a friend request and move it to the approved list
@@ -156,18 +162,20 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
         List<String> senderFriends = List<String>.from(senderData['friends'] ?? []);
         senderFriends.add(widget.username);
 
-        // Remove the current user's username from the sender's "sentRequest"
+        // Remove all instances of the current user's username from the sender's "sentRequest"
         List<String> senderSentRequests = List<String>.from(senderData['sentRequest'] ?? []);
-        senderSentRequests.remove(widget.username);
+        senderSentRequests.removeWhere((request) => request == widget.username);
 
         await collectionRef.doc(senderDoc.id).update({
           'friends': senderFriends,
           'sentRequest': senderSentRequests,
         });
 
+        // Sync local state with Firestore
         setState(() {
           approved.remove(username);
           friends.add(username);
+          sentRequests = List<String>.from(senderSentRequests); // Ensure duplicates are removed
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -185,6 +193,8 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
       );
     }
   }
+
+
 
   // Unsend a friend request and remove it from Firestore and local state
   void _unsendFriendRequest(String username) async {
@@ -297,24 +307,23 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
   }
 
   Widget _buildFriendsList(
-      List<String> list,
-      String emptyMessage,
-      bool isActionable, {
-        void Function(String username)? onAction, // Generic action for button
-        String buttonText = "Action",            // Customizable button text
-      }) {
+      List<String> list, String emptyMessage, bool isActionable,
+      {void Function(String username)? onAction, String buttonText = "Action"}) {
     if (list.isEmpty) {
       return Center(child: Text(emptyMessage));
     }
 
+    // Remove duplicate entries in the list before rendering
+    final uniqueList = list.toSet().toList();
+
     return ListView.builder(
-      itemCount: list.length,
+      itemCount: uniqueList.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(list[index]),
+          title: Text(uniqueList[index]),
           trailing: isActionable
               ? ElevatedButton(
-            onPressed: () => onAction?.call(list[index]),
+            onPressed: () => onAction?.call(uniqueList[index]),
             child: Text(buttonText), // Use the custom button text
           )
               : null,
@@ -322,6 +331,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
       },
     );
   }
+
 
 
   // Show a dialog to send a new friend request
