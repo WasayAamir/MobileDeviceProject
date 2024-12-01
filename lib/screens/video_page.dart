@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-//class videopage
+//VideoPage Class
+//The VideoPage widget shows a YouTube video and the details of the workout
 class VideoPage extends StatefulWidget {
   final String videoUrl;
   final String title;
   final int sets;
   final int reps;
 
+  //Constructor
   VideoPage({
     required this.videoUrl,
     required this.title,
@@ -33,6 +35,7 @@ class _VideoPageState extends State<VideoPage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    //Get the id of the video using the youtube video's url
     final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
 
     //youtube player
@@ -47,6 +50,7 @@ class _VideoPageState extends State<VideoPage> {
   }
 
   @override
+  //Function to reset to portrait after exiting the video page
   void dispose() {
     //make sure orientation fixes once you exit
     SystemChrome.setPreferredOrientations([

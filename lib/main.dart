@@ -10,10 +10,9 @@ import 'screens/register_page.dart';
 import 'screens/settings_page.dart';
 
 void main() async {
-  // Ensures widgets are properly bound before initializing Firebase
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase with platform-specific options
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -21,18 +20,18 @@ void main() async {
   // Initialize Firebase push notifications
   await FirebaseApi().initNotifications();
 
-  // Initialize the settings database to get the user's theme preference
+  // Get the user's theme preference from the settings Database
   final settingsDatabase = SettingsDatabase();
   String themePreference = await settingsDatabase.getThemePreference() ?? 'light';
 
-  // Launch the main application with the theme preference
+  //Run FitSyncAPP
   runApp(FitsyncApp(initialTheme: themePreference));
 }
 
 class FitsyncApp extends StatefulWidget {
   final String initialTheme;
 
-  // Constructor to initialize the application with an initial theme
+  //Constructor
   FitsyncApp({required this.initialTheme});
 
   @override
@@ -47,33 +46,30 @@ class _FitsyncAppState extends State<FitsyncApp> {
   void initState() {
     super.initState();
 
-    // Set theme based on user's preference (dark or light mode)
+    // Set up theme
     _themeMode = widget.initialTheme == 'dark' ? ThemeMode.dark : ThemeMode.light;
   }
 
-  // Function to toggle the theme between dark and light modes
+  //Function to toggle between light and dark mode
   void _toggleTheme(bool isDark) async {
     setState(() {
-      // Set the theme mode based on user's toggle
       _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     });
 
-    // Save the user's theme preference to the database
+    //Save the theme to the SettingsDatabase
     await _settingsDatabase.saveThemePreference(isDark ? 'dark' : 'light');
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // Light and dark theme configurations
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      themeMode: _themeMode, // Apply the current theme mode
+      themeMode: _themeMode,
 
-      // Set the initial route to the login page
+      //Make it so that the first page to appear is login
       initialRoute: '/login',
 
-      // Define the routes in the application
       routes: {
         // Login Page Route
         '/login': (context) => LoginPage(
@@ -84,9 +80,9 @@ class _FitsyncAppState extends State<FitsyncApp> {
         // Home Page Route
         '/home': (context) => FitsyncHomePage(
           username: '',
-          level: 1, // Default level
-          currentExp: 0, // Default experience points
-          requiredExp: 10, // Default required experience points
+          level: 1,
+          currentExp: 0,
+          requiredExp: 100,
           onToggleTheme: _toggleTheme,
           isDarkMode: _themeMode == ThemeMode.dark,
 
@@ -100,11 +96,13 @@ class _FitsyncAppState extends State<FitsyncApp> {
           onToggleTheme: _toggleTheme,
           isDarkMode: _themeMode == ThemeMode.dark,
         ),
+
+        // LevelUp Screen Route
         '/level': (context) => LevelUpScreen(
           username: '',
-          level: 1, // Default level
-          currentExp: 0, // Default experience points
-          requiredExp: 10, // Default required experience points
+          level: 1,
+          currentExp: 0,
+          requiredExp: 100,
           onToggleTheme: _toggleTheme,
           isDarkMode: _themeMode == ThemeMode.dark,
         ),
