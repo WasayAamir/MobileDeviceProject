@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/video_page.dart';
 
+//slide widget class
 class SlideWidget extends StatelessWidget {
   final String title;
 
@@ -38,7 +39,7 @@ class SlideWidgetWithImage extends StatelessWidget {
     required this.videoUrl,
   });
 
-  // Function to show workout dialog
+  //workout dialog function
   void _showWorkoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -49,23 +50,23 @@ class SlideWidgetWithImage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                // Dismiss dialog
+
                 Navigator.of(context).pop();
               },
               child: Text('No'),
             ),
             TextButton(
               onPressed: () {
-                // Navigate to Video Page if 'Yes' is pressed
-                Navigator.of(context).pop();  // Close dialog
+                //navigate to video
+                Navigator.of(context).pop();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => VideoPage(
                       videoUrl: videoUrl,
                       title: title,
-                      sets: 3, // Example value for sets
-                      reps: 15, // Example value for reps
+                      sets: 3,
+                      reps: 15,
                     ),
                   ),
                 );
@@ -82,7 +83,8 @@ class SlideWidgetWithImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _showWorkoutDialog(context);  // Show the dialog on tap
+        //workout dialog
+        _showWorkoutDialog(context);
       },
       child: Container(
         width: 150,

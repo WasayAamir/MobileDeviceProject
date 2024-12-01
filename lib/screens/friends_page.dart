@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+//friends page class
 class FriendsPage extends StatefulWidget {
-  final String username; // Use username directly
-
-  FriendsPage({required this.username}); // Constructor to accept username
+  final String username;
+  //constructor
+  FriendsPage({required this.username});
 
   @override
   _FriendsPageState createState() => _FriendsPageState();
@@ -22,48 +23,51 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    // Fetch data for the user using their username
+    //fetch data using username
     _fetchFriendsData();
   }
 
-  // Fetch data for friends, sent requests, and approved requests based on username
+  //fetch data for friends, requests, sent requests by username.
   void _fetchFriendsData() {
     FirebaseFirestore.instance
-        .collection('Fitsync Authentication') // Firestore collection
-        .where('Username', isEqualTo: widget.username) // Query by username
+    //collection in firestore
+        .collection('Fitsync Authentication')
+        .where('Username', isEqualTo: widget.username)
         .snapshots()
         .listen((QuerySnapshot snapshot) {
-      print('Fetched snapshot: ${snapshot.docs.length}'); // Debugging line
+      print('Fetched snapshot: ${snapshot.docs.length}');
       if (snapshot.docs.isNotEmpty) {
         var data = snapshot.docs.first.data() as Map<String, dynamic>;
-        print('User data: $data'); // Debugging line
+        print('User data: $data');
+        //
         setState(() {
           friends = List<String>.from(data['friends'] ?? []);
           sentRequests = List<String>.from(data['sentRequest'] ?? []);
           approved = List<String>.from(data['receivedRequests'] ?? []);
         });
-      } else {
-        print('No user found with username: ${widget.username}'); // Debugging line
+      }//if no user found
+      else {
+        print('No user with username: ${widget.username}');
       }
     });
   }
 
-  // Send a friend request
+  //friend request
   void _sendFriendRequest(String username) async {
     final collectionRef = FirebaseFirestore.instance.collection('Fitsync Authentication');
 
     try {
-      // Find the recipient's document
+      //find document
       var querySnapshot = await collectionRef.where('Username', isEqualTo: username).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         var recipientDoc = querySnapshot.docs.first;
         var recipientData = recipientDoc.data() as Map<String, dynamic>;
 
-        // Get the recipient's `receivedRequests` list
+        //received requests list
         List<String> receivedRequests = List<String>.from(recipientData['receivedRequests'] ?? []);
 
-        // Avoid duplicate requests in the recipient's `receivedRequests`
+        //don't send duplicates
         if (receivedRequests.contains(widget.username)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Request already sent to $username.")),
@@ -71,19 +75,19 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           return;
         }
 
-        // Add the current user's username to the recipient's `receivedRequests`
+        //add user name to received
         receivedRequests.add(widget.username);
         await collectionRef.doc(recipientDoc.id).update({
           'receivedRequests': receivedRequests,
         });
 
-        // Add the recipient's username to the current user's `sentRequest`
+
         final currentUserDoc = await collectionRef.where('Username', isEqualTo: widget.username).get();
         if (currentUserDoc.docs.isNotEmpty) {
           var currentUserData = currentUserDoc.docs.first.data() as Map<String, dynamic>;
           List<String> sentRequests = List<String>.from(currentUserData['sentRequest'] ?? []);
 
-          // Avoid duplicate entries in the current user's `sentRequests`
+          //no duplicates
           if (!sentRequests.contains(username)) {
             sentRequests.add(username);
 
@@ -94,13 +98,13 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
             setState(() {
               this.sentRequests = List<String>.from(sentRequests); // Sync local state with Firestore
             });
-
+            //inform friend request sent
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Friend request sent to $username.")),
             );
           }
         }
-      } else {
+      } else {//if no user
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("User $username not found.")),
         );
@@ -116,12 +120,12 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
 
 
 
-  // Accept a friend request and move it to the approved list
+  //accepting friend request
   void _acceptFriendRequest(String username) async {
     try {
       final collectionRef = FirebaseFirestore.instance.collection('Fitsync Authentication');
 
-      // Query the current user's document
+      //Query current user's document
       var currentUserQuery = await collectionRef.where('Username', isEqualTo: widget.username).get();
       if (currentUserQuery.docs.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -133,7 +137,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
       var currentUserDoc = currentUserQuery.docs.first;
       var currentUserData = currentUserDoc.data() as Map<String, dynamic>;
 
-      // Query the sender's document
+      //Query sender's document
       var senderQuery = await collectionRef.where('Username', isEqualTo: username).get();
       if (senderQuery.docs.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -145,7 +149,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
       var senderDoc = senderQuery.docs.first;
       var senderData = senderDoc.data() as Map<String, dynamic>;
 
-      // Update current user's "friends" and "receivedRequests"
+      //updating users friends and received requests
       List<String> userFriends = List<String>.from(currentUserData['friends'] ?? []);
       List<String> userReceivedRequests = List<String>.from(currentUserData['receivedRequests'] ?? []);
 
@@ -158,11 +162,9 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           'receivedRequests': userReceivedRequests,
         });
 
-        // Update sender's "friends"
         List<String> senderFriends = List<String>.from(senderData['friends'] ?? []);
         senderFriends.add(widget.username);
 
-        // Remove all instances of the current user's username from the sender's "sentRequest"
         List<String> senderSentRequests = List<String>.from(senderData['sentRequest'] ?? []);
         senderSentRequests.removeWhere((request) => request == widget.username);
 
@@ -171,15 +173,15 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           'sentRequest': senderSentRequests,
         });
 
-        // Sync local state with Firestore
+        //syncing local state with firestore
         setState(() {
           approved.remove(username);
           friends.add(username);
-          sentRequests = List<String>.from(senderSentRequests); // Ensure duplicates are removed
+          sentRequests = List<String>.from(senderSentRequests);
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("$username has been added to your friends list.")),
+          SnackBar(content: Text("$username added to your friends list.")),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -189,33 +191,31 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
     } catch (e) {
       print("Error accepting friend request: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to accept friend request. Please try again.")),
+        SnackBar(content: Text("Failed accepting friend request. Please try again.")),
       );
     }
   }
 
 
 
-  // Unsend a friend request and remove it from Firestore and local state
+  //unsending friend request
   void _unsendFriendRequest(String username) async {
     final collectionRef = FirebaseFirestore.instance.collection('Fitsync Authentication');
 
     try {
-      // Find the recipient's document
+      //find document of recipient
       var recipientQuery = await collectionRef.where('Username', isEqualTo: username).get();
 
       if (recipientQuery.docs.isNotEmpty) {
         var recipientDoc = recipientQuery.docs.first;
         var recipientData = recipientDoc.data() as Map<String, dynamic>;
 
-        // Remove the current user's username from the recipient's `receivedRequests`
         List<String> receivedRequests = List<String>.from(recipientData['receivedRequests'] ?? []);
         receivedRequests.remove(widget.username);
         await collectionRef.doc(recipientDoc.id).update({
           'receivedRequests': receivedRequests,
         });
 
-        // Remove the recipient's username from the current user's `sentRequest`
         var currentUserQuery = await collectionRef.where('Username', isEqualTo: widget.username).get();
         if (currentUserQuery.docs.isNotEmpty) {
           var currentUserData = currentUserQuery.docs.first.data() as Map<String, dynamic>;
@@ -225,9 +225,9 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           await collectionRef.doc(currentUserQuery.docs.first.id).update({
             'sentRequest': sentRequests,
           });
-
+         //updating local state
           setState(() {
-            this.sentRequests.remove(username); // Update local state
+            this.sentRequests.remove(username);
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -251,6 +251,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //app bar friends
       appBar: AppBar(
         title: Text('Friends'),
         backgroundColor: Colors.deepPurple[400],
@@ -280,25 +281,24 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
       body: TabBarView(
         controller: _tabController,
         children: [
-          // Friends Tab
+          //Friends Tab
           _buildFriendsList(friends, "No friends added yet.", false),
-
-          // Sent Requests Tab
+          //requests tab
           _buildFriendsList(
             sentRequests,
             "No sent requests.",
             true,
-            onAction: _unsendFriendRequest, // Action: Unsend
-            buttonText: "Unsend",          // Button Text: Unsend
+            onAction: _unsendFriendRequest,
+            buttonText: "Unsend",
           ),
 
-          // Approved Tab
+          //approve tab
           _buildFriendsList(
             approved,
             "No approved requests.",
             true,
-            onAction: _acceptFriendRequest, // Action: Approve
-            buttonText: "Approve",           // Button Text: Approve
+            onAction: _acceptFriendRequest,
+            buttonText: "Approve",
           ),
         ],
       ),
@@ -313,7 +313,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
       return Center(child: Text(emptyMessage));
     }
 
-    // Remove duplicate entries in the list before rendering
+    //take out duplicates
     final uniqueList = list.toSet().toList();
 
     return ListView.builder(
@@ -324,7 +324,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           trailing: isActionable
               ? ElevatedButton(
             onPressed: () => onAction?.call(uniqueList[index]),
-            child: Text(buttonText), // Use the custom button text
+            child: Text(buttonText),
           )
               : null,
         );
@@ -334,7 +334,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
 
 
 
-  // Show a dialog to send a new friend request
+  //dialog for adding friend
   void _showAddFriendDialog() {
     showDialog(
       context: context,
