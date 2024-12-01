@@ -158,7 +158,13 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
               return Column(
                 mainAxisSize: MainAxisSize.min, // Minimize dialog size
                 children: [
-                  for (var workout in ["Crunch's", "Push-ups", "Sit ups", "Bicep curls", "Leg curls"])
+                  for (var workout in [
+                    "Crunch's +5XP",
+                    "Push-ups +5XP",
+                    "Sit ups +5XP",
+                    "Bicep curls +5XP",
+                    "Leg curls +5XP"
+                  ])
                     RadioListTile<String>(
                       title: Text(workout),
                       value: workout,
