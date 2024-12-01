@@ -12,17 +12,17 @@ import 'friends_page.dart';
 
 class FitsyncHomePage extends StatefulWidget {
   final String username;
-  final int level; // Add this
-  final int currentExp; // Add this
-  final int requiredExp; // Add this
+  final int level;
+  final int currentExp;
+  final int requiredExp;
   final Function(bool) onToggleTheme;
   final bool isDarkMode;
 
   FitsyncHomePage({
     required this.username,
-    required this.level, // Add this
-    required this.currentExp, // Add this
-    required this.requiredExp, // Add this
+    required this.level,
+    required this.currentExp,
+    required this.requiredExp,
     required this.onToggleTheme,
     required this.isDarkMode,
   });
@@ -75,7 +75,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
 
   late int currentExp;
   late int level;
-  final int requiredExp = 100; // Keep this as it is or fetch from Firestore
+  final int requiredExp = 100;
 
   @override
   void initState() {
@@ -118,12 +118,12 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           content: Text('Do you want to do this workout?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(), // Dismiss dialog
+              onPressed: () => Navigator.of(context).pop(),
               child: Text('No'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss dialog
+                Navigator.of(context).pop();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -176,14 +176,14 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog without action
+                Navigator.of(context).pop();
               },
               child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
                 if (selectedWorkout.isNotEmpty) {
-                  Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop();
 
                   // Add 5 EXP
                   int newExp = currentExp + 5;
@@ -193,7 +193,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                     int newLevel = level + 1;
                     newExp = newExp - requiredExp; // Carry over extra EXP if any
 
-                    // Update Firestore with new level and EXP
+                    // Update Firestore with the new level and EXP
                     await _updateFirestore(newLevel, newExp);
 
                     setState(() {
@@ -225,6 +225,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     );
   }
 
+  //Update the firestore with the newlevel and and updatedExp
   Future<void> _updateFirestore(int newLevel, int newExp) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
@@ -251,6 +252,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
     }
   }
 
+  //Function to display the level up dialog
   void _showLevelUpDialog(int newLevel) {
     showDialog(
       context: context,
@@ -338,7 +340,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Workout Tutorials'),
               onTap: () {
-                // Navigate to the workout list page
+                // Go the WorkoutList page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -350,7 +352,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Settings'),
               onTap: () {
-                // Navigate to the settings page
+                // Go the Settings page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -365,7 +367,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
             ListTile(
               title: Text('Help'),
               onTap: () {
-                // Navigate to the help page
+                // Go the Help page
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => HelpPage()),
@@ -380,11 +382,11 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Displaying the user's level and username at the top
+            //Show the user's level and username
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Display Level using StreamBuilder
+                // Use StreamBuilder to show the level
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('Fitsync Authentication')
@@ -402,7 +404,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                       );
                     }
 
-                    // Extract the level from the first matching document
+                    // Get the level
                     final userDoc = snapshot.data!.docs.first;
                     final level = userDoc['Level'] ?? 'N/A';
 
@@ -413,7 +415,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                   },
                 ),
 
-                // Display username
+                // Show username
                 Text(
                   widget.username,
                   style: TextStyle(fontSize: 20),
@@ -423,7 +425,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
 
             SizedBox(height: 20),
 
-            // Horizontal list of workout tutorial widgets
+            //List of the workout tutorials
             Container(
               height: 150,
               child: ListView(
@@ -500,18 +502,18 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                                       itemBuilder: (context, index) {
                                         final challenge = weeklyChallenges[index];
                                         return Dismissible(
-                                          key: UniqueKey(), // Ensure each key is unique
+                                          key: UniqueKey(),
                                           direction: DismissDirection.endToStart,
                                           onDismissed: (direction) async {
                                             setState(() {
-                                              // Remove the challenge from the list when swiped
+                                              //Remove challenge when the user swipes it
                                               weeklyChallenges.removeAt(index);
                                             });
 
-                                            // Increase user's XP by 10
+                                            // Increase XP by 10
                                             int newExp = currentExp + 10;
 
-                                            // Check for level-up
+                                            //Check for level
                                             if (newExp >= requiredExp) {
                                               int newLevel = level + 1;
                                               newExp = newExp - requiredExp;
@@ -535,7 +537,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                                               });
                                             }
 
-                                            // Show a confirmation SnackBar
+                                            //Show a confirmation SnackBar
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
                                                 content: Text('Completed ${challenge['title']}! +10 XP'),
@@ -729,7 +731,7 @@ class _FitsyncHomePageState extends State<FitsyncHomePage> {
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 6,
                         spreadRadius: 2,
-                        offset: Offset(0, -2), // Shadow from bottom to give a floating effect
+                        offset: Offset(0, -2),
                       ),
                     ],
                   ),
